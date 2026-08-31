@@ -21,7 +21,15 @@ input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}
 .entry{display:grid;grid-template-columns:120px 120px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
 .entry:first-of-type{border-top:0}.cat{font-weight:700;color:var(--accent)}.note{font-size:12px;color:var(--muted);margin-top:3px}
 .lock{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.lock input{min-width:280px}
-@media(max-width:800px){.metrics{grid-template-columns:repeat(2,1fr)}.entry{grid-template-columns:95px 90px 1fr}}
+.reviewgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.reviewbox{background:#f9fafb;border:1px solid var(--line);border-radius:14px;padding:16px}
+.reviewtitle{font-size:16px;font-weight:700;margin-bottom:10px}
+.reviewbox p{line-height:1.65;margin:0 0 12px}
+.reviewitem,.priority,.avoid{font-size:13px;line-height:1.65;margin-top:10px}
+.priority{background:#eef2ff;border-radius:10px;padding:10px}
+.avoid{background:#fff7ed;border-radius:10px;padding:10px}
+.badge{font-size:11px;font-weight:400;padding:2px 7px;border-radius:999px;background:#f3f4f6;color:var(--muted);margin-left:6px}
+@media(max-width:800px){.reviewgrid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.entry{grid-template-columns:95px 90px 1fr}}
 @media(max-width:520px){.metrics{grid-template-columns:1fr}.entry{grid-template-columns:1fr;gap:4px}.lock input{min-width:0;width:100%}}
 </style>
 </head>
@@ -56,7 +64,7 @@ input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}
 
 <script>
 const API="https://eascyihwpsxzcccwfsur.supabase.co/functions/v1/timeline-data";
-let entries=[], mode="day", accessCode="";
+let entries=[], reviews=[], mode="day", accessCode="";
 
 function parseDate(s){return new Date(s+"T00:00:00")}
 function fmt(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),da=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${da}`}
@@ -77,11 +85,32 @@ function render(){
   ].map(([a,b])=>`<div class="card"><div class="label">${a}</div><div class="metric">${b}</div></div>`).join("");
   const by={};xs.forEach(x=>(by[x.entry_date]??=[]).push(x));
   const dates=Object.keys(by).sort().reverse();
+  const reviewMap=Object.fromEntries(reviews.map(r=>[r.review_date,r]));
   document.getElementById("detail").innerHTML=dates.length?dates.map(d=>{
     const dm=by[d].reduce((a,x)=>a+mins(x.start_time,x.end_time),0);
     const rm=by[d].filter(x=>isResearch(x.category)).reduce((a,x)=>a+mins(x.start_time,x.end_time),0);
+    const r=reviewMap[d];
+    const reviewHtml=r?`
+      <div class="reviewgrid">
+        <div class="reviewbox">
+          <div class="reviewtitle">每日总结 ${r.status==="provisional"?'<span class="badge">暂定</span>':''}</div>
+          <p>${r.summary||""}</p>
+          ${r.key_research_conclusion?`<div class="reviewitem"><b>今日关键科研结论</b><br>${r.key_research_conclusion}</div>`:""}
+          ${r.wins?`<div class="reviewitem"><b>做得好的地方</b><br>${r.wins}</div>`:""}
+          ${r.issues?`<div class="reviewitem"><b>主要问题 / 时间损耗</b><br>${r.issues}</div>`:""}
+        </div>
+        <div class="reviewbox">
+          <div class="reviewtitle">明日规划</div>
+          ${r.top_priority_next_day?`<div class="priority"><b>唯一最高优先级</b><br>${r.top_priority_next_day}</div>`:""}
+          ${r.secondary_tasks?`<div class="reviewitem"><b>次要任务</b><br>${r.secondary_tasks}</div>`:""}
+          ${r.english_reading_plan?`<div class="reviewitem"><b>英语 / 文献</b><br>${r.english_reading_plan}</div>`:""}
+          ${r.wellbeing_plan?`<div class="reviewitem"><b>休息 / 状态</b><br>${r.wellbeing_plan}</div>`:""}
+          ${r.avoid_tomorrow?`<div class="avoid"><b>明日不要做</b><br>${r.avoid_tomorrow}</div>`:""}
+        </div>
+      </div>`:"";
     return `<div class="card"><h3>${d} <span class="sub">科研 ${(rm/60).toFixed(1)} h · 记录 ${(dm/60).toFixed(1)} h</span></h3>`+
-      by[d].map(x=>`<div class="entry"><div>${x.start_time.slice(0,5)}–${x.end_time.slice(0,5)}</div><div class="cat">${x.category}</div><div>${x.activity}${x.note?`<div class="note">${x.note}</div>`:""}</div></div>`).join("")+"</div>";
+      by[d].map(x=>`<div class="entry"><div>${x.start_time.slice(0,5)}–${x.end_time.slice(0,5)}</div><div class="cat">${x.category}</div><div>${x.activity}${x.note?`<div class="note">${x.note}</div>`:""}</div></div>`).join("")+
+      reviewHtml+"</div>";
   }).join(""):`<div class="card sub">这个范围还没有记录。</div>`;
 }
 
@@ -94,7 +123,7 @@ async function load(){
     if(r.status===401)throw new Error("访问码不正确");
     if(!r.ok)throw new Error("HTTP "+r.status);
     const data=await r.json();
-    entries=data.entries||[];
+    entries=data.entries||[]; reviews=data.reviews||[];
     const dp=document.getElementById("datePick");
     dp.value=entries.length?entries[entries.length-1].entry_date:new Date().toISOString().slice(0,10);
     document.getElementById("app").style.display="block";
