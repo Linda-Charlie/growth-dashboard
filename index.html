@@ -9,25 +9,20 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--text)}
 .wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
-.hero,.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px}
-h1{margin:0 0 6px;font-size:28px}
-.sub{color:var(--muted);font-size:13px}
+.hero,.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px}
+h1{margin:0 0 6px;font-size:28px}.sub{color:var(--muted);font-size:13px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
 button{padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer}
 button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.metric{font-size:26px;font-weight:700;margin-top:4px}
-.label{font-size:12px;color:var(--muted)}
+.metric{font-size:26px;font-weight:700;margin-top:4px}.label{font-size:12px;color:var(--muted)}
 .entry{display:grid;grid-template-columns:120px 120px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
-.entry:first-of-type{border-top:0}
-.time{font-variant-numeric:tabular-nums}
-.cat{font-weight:700;color:var(--accent)}
-.note{font-size:12px;color:var(--muted);margin-top:3px}
-.status{margin-top:6px;font-size:12px;color:var(--muted)}
+.entry:first-of-type{border-top:0}.cat{font-weight:700;color:var(--accent)}.note{font-size:12px;color:var(--muted);margin-top:3px}
+.lock{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.lock input{min-width:280px}
 @media(max-width:800px){.metrics{grid-template-columns:repeat(2,1fr)}.entry{grid-template-columns:95px 90px 1fr}}
-@media(max-width:520px){.metrics{grid-template-columns:1fr}.entry{grid-template-columns:1fr;gap:4px}}
+@media(max-width:520px){.metrics{grid-template-columns:1fr}.entry{grid-template-columns:1fr;gap:4px}.lock input{min-width:0;width:100%}}
 </style>
 </head>
 <body>
@@ -35,109 +30,85 @@ input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}
   <div class="hero">
     <h1>成长时间仪表盘</h1>
     <div class="sub">固定网页 · 数据来自 Supabase · 刷新即可看到最新记录</div>
-    <div class="status" id="status">正在加载数据…</div>
+    <div class="lock">
+      <input id="accessCode" type="password" placeholder="输入私人访问码">
+      <button id="unlockBtn">解锁数据</button>
+    </div>
+    <div class="sub" id="status">请输入访问码</div>
   </div>
 
-  <div class="tabs" id="tabs">
-    <button data-mode="day" class="active">日</button>
-    <button data-mode="week">周</button>
-    <button data-mode="month">月</button>
-    <button data-mode="quarter">季度</button>
-    <button data-mode="year">年</button>
+  <div id="app" style="display:none">
+    <div class="tabs" id="tabs">
+      <button data-mode="day" class="active">日</button>
+      <button data-mode="week">周</button>
+      <button data-mode="month">月</button>
+      <button data-mode="quarter">季度</button>
+      <button data-mode="year">年</button>
+    </div>
+    <div class="controls">
+      <label>查看日期 <input type="date" id="datePick"></label>
+      <span class="sub" id="rangeText"></span>
+    </div>
+    <div class="metrics" id="metrics"></div>
+    <div id="detail"></div>
   </div>
-
-  <div class="controls">
-    <label>查看日期 <input type="date" id="datePick"></label>
-    <span class="sub" id="rangeText"></span>
-  </div>
-
-  <div class="metrics" id="metrics"></div>
-  <div id="detail"></div>
 </div>
 
 <script>
-const API="https://eascyihwpsxzcccwfsur.supabase.co/functions/v1/timeline-data?key=Mw-0s1K84jjEfNx9zZQq2PB7D43Rb8coLvSCLDCQUBY";
-let entries=[], mode="day";
+const API="https://eascyihwpsxzcccwfsur.supabase.co/functions/v1/timeline-data";
+let entries=[], mode="day", accessCode="";
 
 function parseDate(s){return new Date(s+"T00:00:00")}
-function fmt(d){
-  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), da=String(d.getDate()).padStart(2,"0");
-  return `${y}-${m}-${da}`;
-}
-function monday(d){const x=new Date(d);const n=(x.getDay()+6)%7;x.setDate(x.getDate()-n);return x}
-function rangeFor(date,mode){
-  const d=parseDate(date); let s,e;
-  if(mode==="day"){s=e=d}
-  else if(mode==="week"){s=monday(d);e=new Date(s);e.setDate(e.getDate()+6)}
-  else if(mode==="month"){s=new Date(d.getFullYear(),d.getMonth(),1);e=new Date(d.getFullYear(),d.getMonth()+1,0)}
-  else if(mode==="quarter"){const q=Math.floor(d.getMonth()/3)*3;s=new Date(d.getFullYear(),q,1);e=new Date(d.getFullYear(),q+3,0)}
-  else{s=new Date(d.getFullYear(),0,1);e=new Date(d.getFullYear(),11,31)}
-  return [fmt(s),fmt(e)];
-}
-function mins(a,b){
-  const [ah,am]=a.slice(0,5).split(":").map(Number);
-  const [bh,bm]=b.slice(0,5).split(":").map(Number);
-  return Math.max(0,bh*60+bm-ah*60-am);
-}
+function fmt(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),da=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${da}`}
+function monday(d){const x=new Date(d),n=(x.getDay()+6)%7;x.setDate(x.getDate()-n);return x}
+function rangeFor(date,mode){const d=parseDate(date);let s,e;if(mode==="day"){s=e=d}else if(mode==="week"){s=monday(d);e=new Date(s);e.setDate(e.getDate()+6)}else if(mode==="month"){s=new Date(d.getFullYear(),d.getMonth(),1);e=new Date(d.getFullYear(),d.getMonth()+1,0)}else if(mode==="quarter"){const q=Math.floor(d.getMonth()/3)*3;s=new Date(d.getFullYear(),q,1);e=new Date(d.getFullYear(),q+3,0)}else{s=new Date(d.getFullYear(),0,1);e=new Date(d.getFullYear(),11,31)}return [fmt(s),fmt(e)]}
+function mins(a,b){const [ah,am]=a.slice(0,5).split(":").map(Number),[bh,bm]=b.slice(0,5).split(":").map(Number);return Math.max(0,bh*60+bm-ah*60-am)}
 function isResearch(c){return String(c).includes("科研")}
 
 function render(){
-  const dp=document.getElementById("datePick");
-  const [s,e]=rangeFor(dp.value,mode);
+  const dp=document.getElementById("datePick"),[s,e]=rangeFor(dp.value,mode);
   document.getElementById("rangeText").textContent=s===e?s:`${s} ～ ${e}`;
-
   const xs=entries.filter(x=>x.entry_date>=s&&x.entry_date<=e);
-  let total=0,research=0; const days=new Set();
-  xs.forEach(x=>{
-    const m=mins(x.start_time,x.end_time);
-    total+=m; if(isResearch(x.category))research+=m;
-    days.add(x.entry_date);
-  });
+  let total=0,research=0;const days=new Set();
+  xs.forEach(x=>{const m=mins(x.start_time,x.end_time);total+=m;if(isResearch(x.category))research+=m;days.add(x.entry_date)});
   const pct=total?Math.round(research/total*100):0;
   document.getElementById("metrics").innerHTML=[
-    ["科研时长",(research/60).toFixed(1)+" h"],
-    ["已记录",(total/60).toFixed(1)+" h"],
-    ["科研占比",pct+"%"],
-    ["有记录天数",days.size+" 天"]
+    ["科研时长",(research/60).toFixed(1)+" h"],["已记录",(total/60).toFixed(1)+" h"],["科研占比",pct+"%"],["有记录天数",days.size+" 天"]
   ].map(([a,b])=>`<div class="card"><div class="label">${a}</div><div class="metric">${b}</div></div>`).join("");
-
-  const by={};
-  xs.forEach(x=>(by[x.entry_date]??=[]).push(x));
+  const by={};xs.forEach(x=>(by[x.entry_date]??=[]).push(x));
   const dates=Object.keys(by).sort().reverse();
   document.getElementById("detail").innerHTML=dates.length?dates.map(d=>{
     const dm=by[d].reduce((a,x)=>a+mins(x.start_time,x.end_time),0);
     const rm=by[d].filter(x=>isResearch(x.category)).reduce((a,x)=>a+mins(x.start_time,x.end_time),0);
     return `<div class="card"><h3>${d} <span class="sub">科研 ${(rm/60).toFixed(1)} h · 记录 ${(dm/60).toFixed(1)} h</span></h3>`+
-      by[d].map(x=>`<div class="entry">
-        <div class="time">${x.start_time.slice(0,5)}–${x.end_time.slice(0,5)}</div>
-        <div class="cat">${x.category}</div>
-        <div>${x.activity}${x.note?`<div class="note">${x.note}</div>`:""}</div>
-      </div>`).join("")+"</div>";
+      by[d].map(x=>`<div class="entry"><div>${x.start_time.slice(0,5)}–${x.end_time.slice(0,5)}</div><div class="cat">${x.category}</div><div>${x.activity}${x.note?`<div class="note">${x.note}</div>`:""}</div></div>`).join("")+"</div>";
   }).join(""):`<div class="card sub">这个范围还没有记录。</div>`;
 }
 
 async function load(){
+  accessCode=document.getElementById("accessCode").value.trim();
+  if(!accessCode)return;
+  document.getElementById("status").textContent="正在验证…";
   try{
-    const r=await fetch(API,{cache:"no-store"});
-    if(!r.ok) throw new Error("HTTP "+r.status);
+    const r=await fetch(API,{cache:"no-store",headers:{Authorization:"Bearer "+accessCode}});
+    if(r.status===401)throw new Error("访问码不正确");
+    if(!r.ok)throw new Error("HTTP "+r.status);
     const data=await r.json();
     entries=data.entries||[];
     const dp=document.getElementById("datePick");
     dp.value=entries.length?entries[entries.length-1].entry_date:new Date().toISOString().slice(0,10);
-    document.getElementById("status").textContent="数据已更新："+new Date().toLocaleString("zh-CN");
+    document.getElementById("app").style.display="block";
+    document.getElementById("status").textContent="已解锁 · "+new Date().toLocaleString("zh-CN");
     render();
   }catch(e){
-    document.getElementById("status").textContent="数据加载失败："+e.message;
+    document.getElementById("app").style.display="none";
+    document.getElementById("status").textContent=e.message;
   }
 }
-
-document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{
-  mode=b.dataset.mode;
-  document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));
-  render();
-});
+document.getElementById("unlockBtn").onclick=load;
+document.getElementById("accessCode").addEventListener("keydown",e=>{if(e.key==="Enter")load()});
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));render()});
 document.getElementById("datePick").onchange=render;
-load();
 </script>
 </body>
 </html>
