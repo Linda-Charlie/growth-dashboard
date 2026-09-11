@@ -3,43 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>成长时间仪表盘</title>
+<title>成长仪表盘</title>
 <style>
-:root{--bg:#f6f7fb;--card:#fff;--text:#222;--muted:#707789;--line:#e5e7eb;--accent:#4f46e5}
+:root{--bg:#f6f7fb;--card:#fff;--text:#222;--muted:#707789;--line:#e5e7eb;--accent:#4f46e5;--accent2:#0f766e;--orange:#c2410c;--green:#15803d;--soft:#f9fafb}
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--text)}
-.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
-.hero,.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px}
-h1{margin:0 0 6px;font-size:28px}.sub{color:var(--muted);font-size:13px}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+.hero,.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px}
+h1{margin:0 0 6px;font-size:28px}h2{font-size:18px;margin:0 0 14px}h3{margin:0 0 8px}.sub{color:var(--muted);font-size:13px;line-height:1.6}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
 button{padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer}
 button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}
+.lock{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.lock input{min-width:280px}
 .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .metric{font-size:26px;font-weight:700;margin-top:4px}.label{font-size:12px;color:var(--muted)}
-.entry{display:grid;grid-template-columns:120px 120px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
-.entry:first-of-type{border-top:0}.cat{font-weight:700;color:var(--accent)}.note{font-size:12px;color:var(--muted);margin-top:3px}
-.lock{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.lock input{min-width:280px}
-.reviewgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
-.reviewbox{background:#f9fafb;border:1px solid var(--line);border-radius:14px;padding:16px}
-.reviewtitle{font-size:16px;font-weight:700;margin-bottom:10px}
-.reviewbox p{line-height:1.65;margin:0 0 12px}
-.reviewitem,.priority,.avoid{font-size:13px;line-height:1.65;margin-top:10px}
-.priority{background:#eef2ff;border-radius:10px;padding:10px}
-.avoid{background:#fff7ed;border-radius:10px;padding:10px}
-.badge{font-size:11px;font-weight:400;padding:2px 7px;border-radius:999px;background:#f3f4f6;color:var(--muted);margin-left:6px}
-@media(max-width:800px){.reviewgrid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.entry{grid-template-columns:95px 90px 1fr}}
-@media(max-width:520px){.metrics{grid-template-columns:1fr}.entry{grid-template-columns:1fr;gap:4px}.lock input{min-width:0;width:100%}}
+.chartgrid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:14px}.chartcard{margin-bottom:0;min-width:0}
+.bar-chart{height:230px;display:flex;align-items:flex-end;gap:7px;padding:18px 4px 26px;border-bottom:1px solid var(--line);position:relative}.barcol{height:186px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative}.bar{width:72%;max-width:34px;background:var(--accent);border-radius:7px 7px 2px 2px;min-height:2px}.barcol em{position:absolute;bottom:-24px;font-size:10px;color:var(--muted);font-style:normal;white-space:nowrap;transform:rotate(-45deg);transform-origin:center}.barcol .val{font-size:10px;color:var(--muted);margin-bottom:4px;min-height:12px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 12px;font-size:12px;color:var(--muted)}.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.stackrows{display:flex;flex-direction:column;gap:7px}.stackrow{display:grid;grid-template-columns:46px 1fr 52px;align-items:center;gap:8px;font-size:11px;color:var(--muted)}.stack{height:18px;background:#eef0f4;border-radius:5px;overflow:hidden;display:flex}.seg{height:100%}.stacktotal{text-align:right}
+.heatwrap{overflow-x:auto;padding-bottom:4px}.heat{display:grid;grid-template-columns:92px repeat(14,28px);gap:5px;align-items:center;min-width:520px}.heat .date{font-size:10px;color:var(--muted);text-align:center}.heat .rowname{font-size:12px;color:var(--muted)}.cell{width:24px;height:24px;border-radius:6px;background:#eceff3;border:1px solid #e5e7eb}.cell.on{background:var(--accent);border-color:var(--accent)}.cell.soft{background:#c7d2fe;border-color:#c7d2fe}
+.reviewgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.reviewbox{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px}.reviewtitle{font-size:16px;font-weight:700;margin-bottom:10px}.reviewbox p{line-height:1.65;margin:0 0 12px}.reviewitem,.priority,.avoid{font-size:13px;line-height:1.65;margin-top:10px}.priority{background:#eef2ff;border-radius:10px;padding:10px}.avoid{background:#fff7ed;border-radius:10px;padding:10px}.badge{font-size:11px;font-weight:400;padding:2px 7px;border-radius:999px;background:#f3f4f6;color:var(--muted);margin-left:6px}
+.entry{display:grid;grid-template-columns:120px 120px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.entry:first-of-type{border-top:0}.cat{font-weight:700;color:var(--accent)}.note{font-size:12px;color:var(--muted);margin-top:3px}
+.sleepgrid{display:grid;grid-template-columns:repeat(7,minmax(72px,1fr));gap:8px;overflow-x:auto}.sleepday{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px;min-width:72px}.sleepday b{display:block;font-size:12px}.sleepday span{display:block;font-size:12px;color:var(--muted);margin-top:5px}
+.callout{font-size:12px;color:var(--muted);line-height:1.6;background:#f8fafc;border-left:3px solid #cbd5e1;padding:9px 11px;border-radius:8px;margin-top:12px}
+@media(max-width:900px){.chartgrid{grid-template-columns:1fr}.reviewgrid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.metrics{grid-template-columns:1fr}.entry{grid-template-columns:1fr;gap:4px}.lock input{min-width:0;width:100%}.stackrow{grid-template-columns:42px 1fr 46px}.bar-chart{gap:3px}.barcol em{font-size:9px}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="hero">
-    <h1>成长时间仪表盘</h1>
-    <div class="sub">固定网页 · 数据来自 Supabase · 刷新即可看到最新记录</div>
+    <h1>成长仪表盘</h1>
+    <div class="sub">科研推进 × 时间结构 × 习惯连续性 · 数据来自 Supabase</div>
     <div class="lock">
-      <input id="accessCode" type="password" placeholder="输入私人访问码">
+      <input id="accessCode" type="password" placeholder="输入私人访问码" autocomplete="current-password">
       <button id="unlockBtn">解锁数据</button>
     </div>
     <div class="sub" id="status">请输入访问码</div>
@@ -47,97 +46,52 @@ input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}
 
   <div id="app" style="display:none">
     <div class="tabs" id="tabs">
-      <button data-mode="day" class="active">日</button>
-      <button data-mode="week">周</button>
-      <button data-mode="month">月</button>
-      <button data-mode="quarter">季度</button>
-      <button data-mode="year">年</button>
+      <button data-mode="day" class="active">日</button><button data-mode="week">周</button><button data-mode="month">月</button><button data-mode="quarter">季度</button><button data-mode="year">年</button>
     </div>
     <div class="controls">
-      <label>查看日期 <input type="date" id="datePick"></label>
-      <span class="sub" id="rangeText"></span>
+      <label>查看日期 <input type="date" id="datePick"></label><span class="sub" id="rangeText"></span>
     </div>
     <div class="metrics" id="metrics"></div>
+
+    <div class="chartgrid">
+      <section class="card chartcard"><h2>近 14 天科研投入</h2><div class="sub" id="researchTrendText"></div><div id="researchChart"></div></section>
+      <section class="card chartcard"><h2>习惯连续性</h2><div class="sub">科研≥6h / 英语或阅读 / 运动≥20min / 24:30前入睡</div><div id="habitHeat"></div></section>
+    </div>
+
+    <section class="card"><h2>近 14 天时间结构</h2><div class="legend" id="timeLegend"></div><div id="timeStructure"></div><div class="callout">“科研/事务”等混合类别不会被强行拆分为纯科研；因此时间结构图用于看模式，不作为精确工时审计。</div></section>
+    <section class="card"><h2>近期作息</h2><div id="sleepPanel"></div></section>
+    <section class="card" id="reviewPanel" style="display:none"><h2>所选日期复盘</h2><div id="reviewContent"></div></section>
     <div id="detail"></div>
   </div>
 </div>
 
 <script>
 const API="https://eascyihwpsxzcccwfsur.supabase.co/functions/v1/timeline-data";
-let entries=[], reviews=[], mode="day", accessCode="";
-
+let entries=[],reviews=[],sleep=[],goals=[],mode="day";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 function parseDate(s){return new Date(s+"T00:00:00")}
 function fmt(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),da=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${da}`}
 function monday(d){const x=new Date(d),n=(x.getDay()+6)%7;x.setDate(x.getDate()-n);return x}
-function rangeFor(date,mode){const d=parseDate(date);let s,e;if(mode==="day"){s=e=d}else if(mode==="week"){s=monday(d);e=new Date(s);e.setDate(e.getDate()+6)}else if(mode==="month"){s=new Date(d.getFullYear(),d.getMonth(),1);e=new Date(d.getFullYear(),d.getMonth()+1,0)}else if(mode==="quarter"){const q=Math.floor(d.getMonth()/3)*3;s=new Date(d.getFullYear(),q,1);e=new Date(d.getFullYear(),q+3,0)}else{s=new Date(d.getFullYear(),0,1);e=new Date(d.getFullYear(),11,31)}return [fmt(s),fmt(e)]}
+function rangeFor(date,m){const d=parseDate(date);let s,e;if(m==="day"){s=e=d}else if(m==="week"){s=monday(d);e=new Date(s);e.setDate(e.getDate()+6)}else if(m==="month"){s=new Date(d.getFullYear(),d.getMonth(),1);e=new Date(d.getFullYear(),d.getMonth()+1,0)}else if(m==="quarter"){const q=Math.floor(d.getMonth()/3)*3;s=new Date(d.getFullYear(),q,1);e=new Date(d.getFullYear(),q+3,0)}else{s=new Date(d.getFullYear(),0,1);e=new Date(d.getFullYear(),11,31)}return[fmt(s),fmt(e)]}
 function mins(a,b){const [ah,am]=a.slice(0,5).split(":").map(Number),[bh,bm]=b.slice(0,5).split(":").map(Number);return Math.max(0,bh*60+bm-ah*60-am)}
-function isResearch(c){return String(c).includes("科研")}
-
-function render(){
-  const dp=document.getElementById("datePick"),[s,e]=rangeFor(dp.value,mode);
-  document.getElementById("rangeText").textContent=s===e?s:`${s} ～ ${e}`;
-  const xs=entries.filter(x=>x.entry_date>=s&&x.entry_date<=e);
-  let total=0,research=0;const days=new Set();
-  xs.forEach(x=>{const m=mins(x.start_time,x.end_time);total+=m;if(isResearch(x.category))research+=m;days.add(x.entry_date)});
-  const pct=total?Math.round(research/total*100):0;
-  document.getElementById("metrics").innerHTML=[
-    ["科研时长",(research/60).toFixed(1)+" h"],["已记录",(total/60).toFixed(1)+" h"],["科研占比",pct+"%"],["有记录天数",days.size+" 天"]
-  ].map(([a,b])=>`<div class="card"><div class="label">${a}</div><div class="metric">${b}</div></div>`).join("");
-  const by={};xs.forEach(x=>(by[x.entry_date]??=[]).push(x));
-  const dates=Object.keys(by).sort().reverse();
-  const reviewMap=Object.fromEntries(reviews.map(r=>[r.review_date,r]));
-  document.getElementById("detail").innerHTML=dates.length?dates.map(d=>{
-    const dm=by[d].reduce((a,x)=>a+mins(x.start_time,x.end_time),0);
-    const rm=by[d].filter(x=>isResearch(x.category)).reduce((a,x)=>a+mins(x.start_time,x.end_time),0);
-    const r=reviewMap[d];
-    const reviewHtml=r?`
-      <div class="reviewgrid">
-        <div class="reviewbox">
-          <div class="reviewtitle">每日总结 ${r.status==="provisional"?'<span class="badge">暂定</span>':''}</div>
-          <p>${r.summary||""}</p>
-          ${r.key_research_conclusion?`<div class="reviewitem"><b>今日关键科研结论</b><br>${r.key_research_conclusion}</div>`:""}
-          ${r.wins?`<div class="reviewitem"><b>做得好的地方</b><br>${r.wins}</div>`:""}
-          ${r.issues?`<div class="reviewitem"><b>主要问题 / 时间损耗</b><br>${r.issues}</div>`:""}
-        </div>
-        <div class="reviewbox">
-          <div class="reviewtitle">明日规划</div>
-          ${r.top_priority_next_day?`<div class="priority"><b>唯一最高优先级</b><br>${r.top_priority_next_day}</div>`:""}
-          ${r.secondary_tasks?`<div class="reviewitem"><b>次要任务</b><br>${r.secondary_tasks}</div>`:""}
-          ${r.english_reading_plan?`<div class="reviewitem"><b>英语 / 文献</b><br>${r.english_reading_plan}</div>`:""}
-          ${r.wellbeing_plan?`<div class="reviewitem"><b>休息 / 状态</b><br>${r.wellbeing_plan}</div>`:""}
-          ${r.avoid_tomorrow?`<div class="avoid"><b>明日不要做</b><br>${r.avoid_tomorrow}</div>`:""}
-        </div>
-      </div>`:"";
-    return `<div class="card"><h3>${d} <span class="sub">科研 ${(rm/60).toFixed(1)} h · 记录 ${(dm/60).toFixed(1)} h</span></h3>`+
-      by[d].map(x=>`<div class="entry"><div>${x.start_time.slice(0,5)}–${x.end_time.slice(0,5)}</div><div class="cat">${x.category}</div><div>${x.activity}${x.note?`<div class="note">${x.note}</div>`:""}</div></div>`).join("")+
-      reviewHtml+"</div>";
-  }).join(""):`<div class="card sub">这个范围还没有记录。</div>`;
-}
-
-async function load(){
-  accessCode=document.getElementById("accessCode").value.trim();
-  if(!accessCode)return;
-  document.getElementById("status").textContent="正在验证…";
-  try{
-    const r=await fetch(API,{cache:"no-store",headers:{Authorization:"Bearer "+accessCode}});
-    if(r.status===401)throw new Error("访问码不正确");
-    if(!r.ok)throw new Error("HTTP "+r.status);
-    const data=await r.json();
-    entries=data.entries||[]; reviews=data.reviews||[];
-    const dp=document.getElementById("datePick");
-    dp.value=entries.length?entries[entries.length-1].entry_date:new Date().toISOString().slice(0,10);
-    document.getElementById("app").style.display="block";
-    document.getElementById("status").textContent="已解锁 · "+new Date().toLocaleString("zh-CN");
-    render();
-  }catch(e){
-    document.getElementById("app").style.display="none";
-    document.getElementById("status").textContent=e.message;
-  }
-}
-document.getElementById("unlockBtn").onclick=load;
-document.getElementById("accessCode").addEventListener("keydown",e=>{if(e.key==="Enter")load()});
-document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));render()});
-document.getElementById("datePick").onchange=render;
+function catType(x){const c=String(x.category||""),a=String(x.activity||"");if(c==="科研")return"core";if(/组会|科研\/组会/.test(c+a))return"support";if(/英语|阅读|文献|学习/.test(c+a))return"study";if(/运动|跑步|健身|散步/.test(c+a))return"exercise";if(/休息|睡|午休|吃饭/.test(c+a))return"rest";if(/事务|报奖|行政/.test(c+a))return"admin";if(c.includes("科研"))return"mixed";return"other"}
+function isResearchRelated(x){const t=catType(x);return t==="core"||t==="support"||t==="mixed"}
+function dateSeries(endDate,n=14){const end=parseDate(endDate),out=[];for(let i=n-1;i>=0;i--){const d=new Date(end);d.setDate(end.getDate()-i);out.push(fmt(d))}return out}
+function dayEntries(d){return entries.filter(x=>x.entry_date===d)}
+function dayStats(d){const xs=dayEntries(d),o={total:0,research:0,exercise:0,study:0,core:0,support:0,admin:0,rest:0,mixed:0,other:0};for(const x of xs){const m=mins(x.start_time,x.end_time),t=catType(x);o.total+=m;o[t]=(o[t]||0)+m;if(isResearchRelated(x))o.research+=m;if(t==="exercise")o.exercise+=m;if(t==="study")o.study+=m}return o}
+function sleepFor(d){return sleep.find(x=>x.record_date===d)}
+function bedBefore0030(rec){if(!rec?.bed_time)return false;const [h,m]=rec.bed_time.slice(0,5).split(":").map(Number);return h===0?m<=30:h>=18}
+function renderMetrics(s,e){const xs=entries.filter(x=>x.entry_date>=s&&x.entry_date<=e);let total=0,research=0,exercise=0,study=0;const days=new Set();for(const x of xs){const m=mins(x.start_time,x.end_time),t=catType(x);total+=m;if(isResearchRelated(x))research+=m;if(t==="exercise")exercise+=m;if(t==="study")study+=m;days.add(x.entry_date)}document.getElementById("metrics").innerHTML=[["科研相关",(research/60).toFixed(1)+" h"],["已记录",(total/60).toFixed(1)+" h"],["运动",Math.round(exercise)+" min"],["英语/阅读",Math.round(study)+" min"]].map(([a,b])=>`<div class="card"><div class="label">${a}</div><div class="metric">${b}</div></div>`).join("")}
+function renderResearchTrend(anchor){const ds=dateSeries(anchor),vals=ds.map(d=>dayStats(d).research/60),max=Math.max(1,...vals),avg7=vals.slice(-7).reduce((a,b)=>a+b,0)/7;document.getElementById("researchTrendText").textContent=`近7日平均 ${avg7.toFixed(1)} h/天`;document.getElementById("researchChart").innerHTML=`<div class="bar-chart">${ds.map((d,i)=>`<div class="barcol" title="${d} · ${vals[i].toFixed(1)} h"><span class="val">${vals[i]?vals[i].toFixed(1):""}</span><div class="bar" style="height:${Math.max(2,vals[i]/max*155)}px"></div><em>${d.slice(5)}</em></div>`).join("")}</div>`}
+function renderHabits(anchor){const ds=dateSeries(anchor);let html=`<div class="heatwrap"><div class="heat"><div></div>${ds.map(d=>`<div class="date">${d.slice(8)}</div>`).join("")}`;const rows=[{name:"科研 ≥6h",f:d=>dayStats(d).research>=360},{name:"英语/阅读",f:d=>dayStats(d).study>0},{name:"运动 ≥20m",f:d=>dayStats(d).exercise>=20},{name:"按时睡",f:d=>bedBefore0030(sleepFor(d))}];for(const r of rows){html+=`<div class="rowname">${r.name}</div>${ds.map(d=>`<div class="cell ${r.f(d)?'on':''}" title="${d} ${r.name}"></div>`).join("")}`}html+=`</div></div>`;document.getElementById("habitHeat").innerHTML=html}
+const typeMeta={core:["核心科研","#4f46e5"],support:["组会/科研支持","#7c3aed"],study:["英语/阅读","#0f766e"],admin:["事务","#c2410c"],exercise:["运动","#15803d"],rest:["休息/吃饭","#94a3b8"],mixed:["科研/事务混合","#6366f1"],other:["其他","#cbd5e1"]};
+function renderTimeStructure(anchor){const ds=dateSeries(anchor),keys=Object.keys(typeMeta);document.getElementById("timeLegend").innerHTML=keys.map(k=>`<span><i class="sw" style="background:${typeMeta[k][1]}"></i>${typeMeta[k][0]}</span>`).join("");document.getElementById("timeStructure").innerHTML=`<div class="stackrows">${ds.map(d=>{const s=dayStats(d),den=s.total||1,segs=keys.map(k=>{const v=s[k]||0;return v?`<span class="seg" title="${typeMeta[k][0]} ${(v/60).toFixed(1)}h" style="width:${v/den*100}%;background:${typeMeta[k][1]}"></span>`:""}).join("");return `<div class="stackrow"><span>${d.slice(5)}</span><div class="stack">${segs}</div><span class="stacktotal">${(s.total/60).toFixed(1)}h</span></div>`}).join("")}</div>`}
+function renderSleep(anchor){const ds=dateSeries(anchor,7),rs=ds.map(sleepFor).filter(Boolean);if(!rs.length){document.getElementById("sleepPanel").innerHTML=`<div class="sub">目前还没有足够作息记录。之后日终监督中记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;return}document.getElementById("sleepPanel").innerHTML=`<div class="sleepgrid">${ds.map(d=>{const r=sleepFor(d);return `<div class="sleepday"><b>${d.slice(5)}</b><span>起 ${r?.wake_time?esc(r.wake_time.slice(0,5)):"—"}</span><span>睡 ${r?.bed_time?esc(r.bed_time.slice(0,5)):"—"}</span><span>精力 ${r?.energy_score??"—"}</span></div>`}).join("")}</div>`}
+function renderReview(date){const r=reviews.find(x=>x.review_date===date),p=document.getElementById("reviewPanel"),c=document.getElementById("reviewContent");if(!r){p.style.display="none";return}p.style.display="block";c.innerHTML=`<div class="reviewgrid"><div class="reviewbox"><div class="reviewtitle">每日总结 ${r.status==="provisional"?'<span class="badge">暂定</span>':''}</div><p>${esc(r.summary)}</p>${r.key_research_conclusion?`<div class="reviewitem"><b>今日关键科研结论</b><br>${esc(r.key_research_conclusion)}</div>`:""}${r.wins?`<div class="reviewitem"><b>做得好的地方</b><br>${esc(r.wins)}</div>`:""}${r.issues?`<div class="reviewitem"><b>真正的问题</b><br>${esc(r.issues)}</div>`:""}</div><div class="reviewbox"><div class="reviewtitle">明日规划</div>${r.top_priority_next_day?`<div class="priority"><b>唯一最高优先级</b><br>${esc(r.top_priority_next_day)}</div>`:""}${r.secondary_tasks?`<div class="reviewitem"><b>次要任务</b><br>${esc(r.secondary_tasks)}</div>`:""}${r.english_reading_plan?`<div class="reviewitem"><b>英语 / 文献</b><br>${esc(r.english_reading_plan)}</div>`:""}${r.wellbeing_plan?`<div class="reviewitem"><b>休息 / 状态</b><br>${esc(r.wellbeing_plan)}</div>`:""}${r.avoid_tomorrow?`<div class="avoid"><b>明日不要做</b><br>${esc(r.avoid_tomorrow)}</div>`:""}</div></div>`}
+function renderDetail(s,e){const xs=entries.filter(x=>x.entry_date>=s&&x.entry_date<=e),by={};xs.forEach(x=>(by[x.entry_date]??=[]).push(x));const dates=Object.keys(by).sort().reverse();document.getElementById("detail").innerHTML=dates.length?dates.map(d=>{const st=dayStats(d);return `<div class="card"><h3>${d} <span class="sub">科研相关 ${(st.research/60).toFixed(1)} h · 记录 ${(st.total/60).toFixed(1)} h</span></h3>${by[d].map(x=>`<div class="entry"><div>${esc(x.start_time.slice(0,5))}–${esc(x.end_time.slice(0,5))}</div><div class="cat">${esc(x.category)}</div><div>${esc(x.activity)}${x.note?`<div class="note">${esc(x.note)}</div>`:""}</div></div>`).join("")}</div>`}).join(""):`<div class="card sub">这个范围还没有记录。</div>`}
+function render(){const dp=document.getElementById("datePick"),[s,e]=rangeFor(dp.value,mode);document.getElementById("rangeText").textContent=s===e?s:`${s} ～ ${e}`;renderMetrics(s,e);renderResearchTrend(dp.value);renderHabits(dp.value);renderTimeStructure(dp.value);renderSleep(dp.value);renderReview(dp.value);renderDetail(s,e)}
+async function load(){const code=document.getElementById("accessCode").value.trim();if(!code)return;document.getElementById("status").textContent="正在验证…";try{const r=await fetch(API,{cache:"no-store",headers:{Authorization:"Bearer "+code}});if(r.status===401)throw new Error("访问码不正确");if(!r.ok)throw new Error("HTTP "+r.status);const data=await r.json();entries=data.entries||[];reviews=data.reviews||[];sleep=data.sleep||[];goals=data.goals||[];const dp=document.getElementById("datePick");dp.value=entries.length?entries[entries.length-1].entry_date:new Date().toISOString().slice(0,10);document.getElementById("app").style.display="block";document.getElementById("status").textContent="已解锁 · "+new Date().toLocaleString("zh-CN");render()}catch(e){document.getElementById("app").style.display="none";document.getElementById("status").textContent=e.message}}
+document.getElementById("unlockBtn").onclick=load;document.getElementById("accessCode").addEventListener("keydown",e=>{if(e.key==="Enter")load()});document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));render()});document.getElementById("datePick").onchange=render;
 </script>
 </body>
 </html>
