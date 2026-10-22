@@ -17,7 +17,7 @@ input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}.lock inp
 .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}.stackrows{display:flex;flex-direction:column;gap:7px}.stackrow{display:grid;grid-template-columns:46px 1fr 52px;align-items:center;gap:8px;font-size:11px;color:var(--muted)}.stack{height:18px;background:#eef0f4;border-radius:5px;overflow:hidden;display:flex}.seg{height:100%}.stacktotal{text-align:right}
 .heatwrap{overflow-x:auto;padding-bottom:4px}.heat{display:grid;grid-template-columns:92px repeat(14,28px);gap:5px;align-items:center;min-width:520px}.heat .date{font-size:10px;color:var(--muted);text-align:center}.heat .rowname{font-size:12px;color:var(--muted)}.cell{width:24px;height:24px;border-radius:6px;background:#eceff3;border:1px solid #e5e7eb}.cell.on{background:var(--accent);border-color:var(--accent)}
 .reviewgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.reviewbox{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px}.reviewtitle{font-size:16px;font-weight:700;margin-bottom:10px}.reviewbox p{line-height:1.65;margin:0 0 12px}.reviewitem,.priority,.avoid{font-size:13px;line-height:1.65;margin-top:10px}.priority{background:#eef2ff;border-radius:10px;padding:10px}.avoid{background:#fff7ed;border-radius:10px;padding:10px}.badge{font-size:11px;font-weight:400;padding:2px 7px;border-radius:999px;background:#f3f4f6;color:var(--muted);margin-left:6px}
-.entry{display:grid;grid-template-columns:120px 120px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.entry:first-of-type{border-top:0}.cat{font-weight:700;color:var(--accent)}.note{font-size:12px;color:var(--muted);margin-top:3px}.sleepchart-wrap{overflow-x:auto}.sleepchart{width:100%;min-width:720px;height:280px;display:block}.sleep-axis{stroke:#dfe3ea;stroke-width:1}.sleep-grid{stroke:#eef0f4;stroke-width:1}.sleep-label{fill:var(--muted);font-size:11px}.sleep-line-wake{fill:none;stroke:#4f46e5;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sleep-line-bed{fill:none;stroke:#0f766e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sleep-dot-wake{fill:#4f46e5}.sleep-dot-bed{fill:#0f766e}.sleep-legend{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 8px;font-size:12px;color:var(--muted)}.sleep-legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:3px}
+.entry{display:grid;grid-template-columns:120px 120px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.entry:first-of-type{border-top:0}.cat{font-weight:700;color:var(--accent)}.note{font-size:12px;color:var(--muted);margin-top:3px}.sleepchart-wrap{overflow-x:auto}.sleepchart{width:100%;min-width:720px;height:300px;display:block}.sleep-axis{stroke:#dfe3ea;stroke-width:1}.sleep-grid{stroke:#eef0f4;stroke-width:1}.sleep-label{fill:var(--muted);font-size:11px}.sleep-line-wake{fill:none;stroke:#4f46e5;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sleep-line-bed{fill:none;stroke:#0f766e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sleep-avg-wake{fill:none;stroke:#4f46e5;stroke-width:1.8;stroke-dasharray:5 4;opacity:.55}.sleep-avg-bed{fill:none;stroke:#0f766e;stroke-width:1.8;stroke-dasharray:5 4;opacity:.55}.sleep-target{stroke:#c2410c;stroke-width:1.4;stroke-dasharray:7 5;opacity:.75}.sleep-target-label{fill:#c2410c;font-size:10px}.sleep-dot-wake{fill:#4f46e5}.sleep-dot-bed{fill:#0f766e}.sleep-dot-late{fill:#dc2626;stroke:#fff;stroke-width:1.5}.sleep-legend{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 8px;font-size:12px;color:var(--muted)}.sleep-legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:3px}.sleep-alert{margin:8px 0 4px;padding:9px 11px;border-radius:9px;background:#fff7ed;color:#9a3412;font-size:12px;line-height:1.55}
 .callout{font-size:12px;color:var(--muted);line-height:1.6;background:#f8fafc;border-left:3px solid #cbd5e1;padding:9px 11px;border-radius:8px;margin-top:12px}
 @media(max-width:900px){.chartgrid,.reviewgrid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.metrics{grid-template-columns:1fr}.entry{grid-template-columns:1fr;gap:4px}.lock input{min-width:0;width:100%}.stackrow{grid-template-columns:42px 1fr 46px}.bar-chart{gap:3px}.barcol em{font-size:9px}}
 </style>
@@ -26,7 +26,7 @@ input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}.lock inp
 <div class="wrap">
   <div class="hero">
     <h1>成长仪表盘</h1>
-    <div class="sub">科研推进 × 时间结构 × 习惯连续性 · 数据来自 Supabase · v8</div>
+    <div class="sub">科研推进 × 时间结构 × 习惯连续性 · 数据来自 Supabase · v9</div>
     <div class="lock"><input id="accessCode" type="password" placeholder="输入私人访问码" autocomplete="current-password"><button id="unlockBtn">解锁数据</button></div>
     <div class="sub" id="status">请输入访问码</div>
   </div>
@@ -71,6 +71,7 @@ function renderSleep(anchor){
     panel.innerHTML=`<div class="sub">目前还没有足够作息记录。之后记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;
     return;
   }
+  const WAKE_TARGET=9, BED_TARGET=24.5;
   const toHour=(t,isBed=false)=>{
     if(!t)return null;
     const [h,m]=t.slice(0,5).split(":").map(Number);
@@ -80,11 +81,16 @@ function renderSleep(anchor){
   };
   const wakeVals=recs.map(x=>toHour(x.rec?.wake_time,false));
   const bedVals=recs.map(x=>toHour(x.rec?.bed_time,true));
-  const present=[...wakeVals,...bedVals].filter(v=>v!==null);
+  const movingAvg=vals=>vals.map((_,i)=>{
+    const w=vals.slice(Math.max(0,i-6),i+1).filter(v=>v!==null);
+    return w.length>=3?w.reduce((a,b)=>a+b,0)/w.length:null;
+  });
+  const wakeAvg=movingAvg(wakeVals),bedAvg=movingAvg(bedVals);
+  const present=[...wakeVals,...bedVals,WAKE_TARGET,BED_TARGET].filter(v=>v!==null);
   let ymin=Math.floor(Math.min(...present)-1),ymax=Math.ceil(Math.max(...present)+1);
   ymin=Math.max(0,ymin);ymax=Math.min(30,ymax);
   if(ymax-ymin<6){const mid=(ymax+ymin)/2;ymin=Math.max(0,Math.floor(mid-3));ymax=Math.min(30,Math.ceil(mid+3))}
-  const W=760,H=260,L=54,R=18,T=18,B=38,pw=W-L-R,ph=H-T-B;
+  const W=760,H=280,L=54,R=18,T=20,B=40,pw=W-L-R,ph=H-T-B;
   const x=i=>L+(ds.length===1?pw/2:i*pw/(ds.length-1));
   const y=v=>T+(ymax-v)*ph/(ymax-ymin);
   const fmtHour=v=>{const n=((Math.round(v*60)%1440)+1440)%1440,h=Math.floor(n/60),m=n%60;return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`};
@@ -94,20 +100,43 @@ function renderSleep(anchor){
     if(cur.length)out.push(cur);
     return out;
   };
+  const lineSvg=(vals,cls)=>segments(vals).map(seg=>`<polyline class="${cls}" points="${seg.map(p=>p.join(",")).join(" ")}"></polyline>`).join("");
   const yTicks=[];for(let v=Math.ceil(ymin/2)*2;v<=ymax;v+=2)yTicks.push(v);
   const grid=yTicks.map(v=>`<line class="sleep-grid" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-label" x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmtHour(v)}</text>`).join("");
   const xLabels=ds.map((d,i)=>i%2===0||i===ds.length-1?`<text class="sleep-label" x="${x(i)}" y="${H-12}" text-anchor="middle">${d.slice(5)}</text>`:"").join("");
-  const wakeLines=segments(wakeVals).map(seg=>`<polyline class="sleep-line-wake" points="${seg.map(p=>p.join(",")).join(" ")}"></polyline>`).join("");
-  const bedLines=segments(bedVals).map(seg=>`<polyline class="sleep-line-bed" points="${seg.map(p=>p.join(",")).join(" ")}"></polyline>`).join("");
-  const wakeDots=wakeVals.map((v,i)=>v===null?"":`<circle class="sleep-dot-wake" cx="${x(i)}" cy="${y(v)}" r="4"><title>${ds[i]} 起床 ${recs[i].rec.wake_time.slice(0,5)}</title></circle>`).join("");
-  const bedDots=bedVals.map((v,i)=>v===null?"":`<circle class="sleep-dot-bed" cx="${x(i)}" cy="${y(v)}" r="4"><title>${ds[i]} 入睡 ${recs[i].rec.bed_time.slice(0,5)}</title></circle>`).join("");
-  panel.innerHTML=`<div class="sleep-legend"><span><i style="background:#4f46e5"></i>起床时间</span><span><i style="background:#0f766e"></i>入睡时间</span><span>缺失日期不连线</span></div><div class="sleepchart-wrap"><svg class="sleepchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="近14天起床与入睡时间折线图">${grid}<line class="sleep-axis" x1="${L}" y1="${T}" x2="${L}" y2="${H-B}"></line><line class="sleep-axis" x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}"></line>${xLabels}${wakeLines}${bedLines}${wakeDots}${bedDots}</svg></div>`;
+  const targetSvg=[
+    [WAKE_TARGET,"09:00 起床目标"],
+    [BED_TARGET,"00:30 入睡目标"]
+  ].filter(([v])=>v>=ymin&&v<=ymax).map(([v,label])=>`<line class="sleep-target" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-target-label" x="${W-R-2}" y="${y(v)-4}" text-anchor="end">${label}</text>`).join("");
+  const wakeDots=wakeVals.map((v,i)=>v===null?"":`<circle class="${v>WAKE_TARGET?'sleep-dot-late':'sleep-dot-wake'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${ds[i]} 起床 ${recs[i].rec.wake_time.slice(0,5)}${v>WAKE_TARGET?' · 晚于目标':''}</title></circle>`).join("");
+  const bedDots=bedVals.map((v,i)=>v===null?"":`<circle class="${v>BED_TARGET?'sleep-dot-late':'sleep-dot-bed'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${ds[i]} 入睡 ${recs[i].rec.bed_time.slice(0,5)}${v>BED_TARGET?' · 晚于目标':''}</title></circle>`).join("");
+  const streaks=(vals,test)=>{
+    const out=[];let s=null;
+    vals.forEach((v,i)=>{if(v!==null&&test(v)){if(s===null)s=i}else{if(s!==null&&i-s>=2)out.push([s,i-1]);s=null}});
+    if(s!==null&&vals.length-s>=2)out.push([s,vals.length-1]);
+    return out;
+  };
+  const lateWake=streaks(wakeVals,v=>v>WAKE_TARGET),lateBed=streaks(bedVals,v=>v>BED_TARGET);
+  const alerts=[];
+  if(lateWake.length){const [a,b]=lateWake.at(-1);alerts.push(`连续晚起 ${b-a+1} 天（${ds[a].slice(5)}–${ds[b].slice(5)}）`)}
+  if(lateBed.length){const [a,b]=lateBed.at(-1);alerts.push(`连续晚睡 ${b-a+1} 天（${ds[a].slice(5)}–${ds[b].slice(5)}）`)}
+  const alertHtml=alerts.length?`<div class="sleep-alert">⚠ ${alerts.join("；")}。建议先稳定作息窗口，而不是靠单日早起补偿。</div>`:"";
+  panel.innerHTML=`
+    <div class="sleep-legend">
+      <span><i style="background:#4f46e5"></i>起床时间</span>
+      <span><i style="background:#0f766e"></i>入睡时间</span>
+      <span><i style="background:#4f46e5;opacity:.55"></i>7天移动平均</span>
+      <span><i style="background:#c2410c"></i>目标线</span>
+      <span>红点 = 晚于目标 · 缺失日期不连线</span>
+    </div>
+    ${alertHtml}
+    <div class="sleepchart-wrap"><svg class="sleepchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="近14天起床与入睡时间折线图">${grid}${targetSvg}<line class="sleep-axis" x1="${L}" y1="${T}" x2="${L}" y2="${H-B}"></line><line class="sleep-axis" x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}"></line>${xLabels}${lineSvg(wakeAvg,"sleep-avg-wake")}${lineSvg(bedAvg,"sleep-avg-bed")}${lineSvg(wakeVals,"sleep-line-wake")}${lineSvg(bedVals,"sleep-line-bed")}${wakeDots}${bedDots}</svg></div>`;
 }
 function renderReview(date){const r=reviews.find(x=>x.review_date===date),p=document.getElementById("reviewPanel"),c=document.getElementById("reviewContent");if(!r){p.style.display="none";return}p.style.display="block";c.innerHTML=`<div class="reviewgrid"><div class="reviewbox"><div class="reviewtitle">每日总结 ${r.status==="provisional"?'<span class="badge">暂定</span>':''}</div><p>${esc(r.summary)}</p>${r.key_research_conclusion?`<div class="reviewitem"><b>今日关键科研结论</b><br>${esc(r.key_research_conclusion)}</div>`:""}${r.wins?`<div class="reviewitem"><b>做得好的地方</b><br>${esc(r.wins)}</div>`:""}${r.issues?`<div class="reviewitem"><b>真正的问题</b><br>${esc(r.issues)}</div>`:""}</div><div class="reviewbox"><div class="reviewtitle">明日规划</div>${r.top_priority_next_day?`<div class="priority"><b>唯一最高优先级</b><br>${esc(r.top_priority_next_day)}</div>`:""}${r.secondary_tasks?`<div class="reviewitem"><b>次要任务</b><br>${esc(r.secondary_tasks)}</div>`:""}${r.english_reading_plan?`<div class="reviewitem"><b>英语 / 文献</b><br>${esc(r.english_reading_plan)}</div>`:""}${r.wellbeing_plan?`<div class="reviewitem"><b>休息 / 状态</b><br>${esc(r.wellbeing_plan)}</div>`:""}${r.avoid_tomorrow?`<div class="avoid"><b>明日不要做</b><br>${esc(r.avoid_tomorrow)}</div>`:""}</div></div>`}
 function renderDetail(s,e){const xs=entries.filter(x=>x.entry_date>=s&&x.entry_date<=e),by={};xs.forEach(x=>(by[x.entry_date]??=[]).push(x));const dates=Object.keys(by).sort().reverse();document.getElementById("detail").innerHTML=dates.length?dates.map(d=>{const st=dayStats(d);const split=`科研相关 ${(st.research/60).toFixed(1)} h（明确纯科研 ${(st.core/60).toFixed(1)} h${st.support?`，科研支持 ${(st.support/60).toFixed(1)} h`:""}${st.mixed?`，混合 ${(st.mixed/60).toFixed(1)} h`:""}）`;return `<div class="card"><h3>${d} <span class="sub">${split} · 记录 ${(st.total/60).toFixed(1)} h</span></h3>${by[d].map(x=>`<div class="entry"><div>${esc(x.start_time.slice(0,5))}–${esc(x.end_time.slice(0,5))}</div><div class="cat">${esc(x.category)}</div><div>${esc(x.activity)}${x.note?`<div class="note">${esc(x.note)}</div>`:""}</div></div>`).join("")}</div>`}).join(""):`<div class="card sub">这个范围还没有记录。</div>`}
 function render(){const dp=document.getElementById("datePick"),[s,e]=rangeFor(dp.value,mode);document.getElementById("rangeText").textContent=s===e?s:`${s} ～ ${e}`;renderMetrics(s,e);renderResearchTrend(dp.value);renderHabits(dp.value);renderTimeStructure(dp.value);renderSleep(dp.value);renderReview(dp.value);renderDetail(s,e)}
-async function load(){const code=document.getElementById("accessCode").value.trim();if(!code)return;document.getElementById("status").textContent="正在验证…";try{const r=await fetch(API,{cache:"no-store",headers:{Authorization:"Bearer "+code}});if(r.status===401)throw new Error("访问码不正确");if(!r.ok)throw new Error("HTTP "+r.status);const data=await r.json();entries=data.entries||[];reviews=data.reviews||[];sleep=data.sleep||[];goals=data.goals||[];const dp=document.getElementById("datePick");dp.value=entries.length?entries[entries.length-1].entry_date:new Date().toISOString().slice(0,10);document.getElementById("app").style.display="block";document.getElementById("status").textContent="已解锁 · v8 · "+new Date().toLocaleString("zh-CN");render()}catch(e){document.getElementById("app").style.display="none";document.getElementById("status").textContent=e.message}}
-document.getElementById("unlockBtn").onclick=load;document.getElementById("accessCode").addEventListener("keydown",e=>{if(e.key==="Enter")load()});document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));render()});document.getElementById("datePick").onchange=async()=>{const dp=document.getElementById("datePick"),selected=dp.value,code=document.getElementById("accessCode").value.trim();if(!code){render();return}document.getElementById("status").textContent="正在刷新所选日期数据…";try{const r=await fetch(API+"?refresh=1",{cache:"no-store",headers:{Authorization:"Bearer "+code,"Cache-Control":"no-cache"}});if(!r.ok)throw new Error("HTTP "+r.status);const data=await r.json();entries=data.entries||[];reviews=data.reviews||[];sleep=data.sleep||[];goals=data.goals||[];dp.value=selected;document.getElementById("status").textContent="已刷新 · v8 · "+new Date().toLocaleString("zh-CN");render()}catch(e){document.getElementById("status").textContent="刷新失败，显示已加载数据 · "+e.message;dp.value=selected;render()}};
+async function load(){const code=document.getElementById("accessCode").value.trim();if(!code)return;document.getElementById("status").textContent="正在验证…";try{const r=await fetch(API,{cache:"no-store",headers:{Authorization:"Bearer "+code}});if(r.status===401)throw new Error("访问码不正确");if(!r.ok)throw new Error("HTTP "+r.status);const data=await r.json();entries=data.entries||[];reviews=data.reviews||[];sleep=data.sleep||[];goals=data.goals||[];const dp=document.getElementById("datePick");dp.value=entries.length?entries[entries.length-1].entry_date:new Date().toISOString().slice(0,10);document.getElementById("app").style.display="block";document.getElementById("status").textContent="已解锁 · v9 · "+new Date().toLocaleString("zh-CN");render()}catch(e){document.getElementById("app").style.display="none";document.getElementById("status").textContent=e.message}}
+document.getElementById("unlockBtn").onclick=load;document.getElementById("accessCode").addEventListener("keydown",e=>{if(e.key==="Enter")load()});document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));render()});document.getElementById("datePick").onchange=async()=>{const dp=document.getElementById("datePick"),selected=dp.value,code=document.getElementById("accessCode").value.trim();if(!code){render();return}document.getElementById("status").textContent="正在刷新所选日期数据…";try{const r=await fetch(API+"?refresh=1",{cache:"no-store",headers:{Authorization:"Bearer "+code,"Cache-Control":"no-cache"}});if(!r.ok)throw new Error("HTTP "+r.status);const data=await r.json();entries=data.entries||[];reviews=data.reviews||[];sleep=data.sleep||[];goals=data.goals||[];dp.value=selected;document.getElementById("status").textContent="已刷新 · v9 · "+new Date().toLocaleString("zh-CN");render()}catch(e){document.getElementById("status").textContent="刷新失败，显示已加载数据 · "+e.message;dp.value=selected;render()}};
 </script>
 </body>
 </html>
