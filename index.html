@@ -94,13 +94,13 @@ const recs=ds.map(d=>{
     panel.innerHTML=`<div class="sub">目前还没有足够作息记录。之后记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;
     return;
   }
-  const WAKE_TARGET=9, BED_TARGET=24.5;
+  const WAKE_TARGET=33, BED_TARGET=24.5;
+  // 固定夜间坐标：22:00 在顶部，次日 12:00 在底部（22–36）。
   const toHour=(t,isBed=false)=>{
     if(!t)return null;
     const [h,m]=t.slice(0,5).split(":").map(Number);
-    let v=h+m/60;
-    if(isBed&&h<6)v+=24;
-    return v;
+    const v=h+m/60+(h<12?24:0);
+    return v>=22&&v<=36?v:null;
   };
   const wakeVals=recs.map(x=>toHour(x.wakeRec?.wake_time,false));
   const bedVals=recs.map(x=>toHour(x.bedRec?.bed_time,true));
@@ -109,13 +109,10 @@ const recs=ds.map(d=>{
     return w.length>=3?w.reduce((a,b)=>a+b,0)/w.length:null;
   });
   const wakeAvg=movingAvg(wakeVals),bedAvg=movingAvg(bedVals);
-  const present=[...wakeVals,...bedVals,WAKE_TARGET,BED_TARGET].filter(v=>v!==null);
-  let ymin=Math.floor(Math.min(...present)-1),ymax=Math.ceil(Math.max(...present)+1);
-  ymin=Math.max(0,ymin);ymax=Math.min(30,ymax);
-  if(ymax-ymin<6){const mid=(ymax+ymin)/2;ymin=Math.max(0,Math.floor(mid-3));ymax=Math.min(30,Math.ceil(mid+3))}
+  const ymin=22,ymax=36;
   const W=Math.max(720,Math.round(panel.getBoundingClientRect().width||760)),H=340,L=58,R=22,T=24,B=44,pw=W-L-R,ph=H-T-B;
   const x=i=>L+(ds.length===1?pw/2:i*pw/(ds.length-1));
-  const y=v=>T+(ymax-v)*ph/(ymax-ymin);
+  const y=v=>T+(v-ymin)*ph/(ymax-ymin);
   const fmtHour=v=>{const n=((Math.round(v*60)%1440)+1440)%1440,h=Math.floor(n/60),m=n%60;return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`};
   const segments=vals=>{
     const out=[];let cur=[];
@@ -124,7 +121,7 @@ const recs=ds.map(d=>{
     return out;
   };
   const lineSvg=(vals,cls)=>segments(vals).map(seg=>`<polyline class="${cls}" points="${seg.map(p=>p.join(",")).join(" ")}"></polyline>`).join("");
-  const yTicks=[];for(let v=Math.ceil(ymin/2)*2;v<=ymax;v+=2)yTicks.push(v);
+  const yTicks=[];for(let v=22;v<=36;v+=2)yTicks.push(v);
   const grid=yTicks.map(v=>`<line class="sleep-grid" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-label" x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmtHour(v)}</text>`).join("");
   const xGrid=ds.map((_,i)=>i%2===0?`<line x1="${x(i)}" y1="${T}" x2="${x(i)}" y2="${H-B}" stroke="#f2f4f7" stroke-width="1"></line>`:"").join("");
   const xLabels=ds.map((d,i)=>i%2===0||i===ds.length-1?`<text class="sleep-label" x="${x(i)}" y="${H-12}" text-anchor="middle">${d.slice(5)}</text>`:"").join("");
