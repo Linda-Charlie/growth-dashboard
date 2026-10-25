@@ -18,6 +18,7 @@ input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}.lock inp
 .heatwrap{overflow-x:auto;padding-bottom:4px}.heat{display:grid;grid-template-columns:92px repeat(14,28px);gap:5px;align-items:center;min-width:520px}.heat .date{font-size:10px;color:var(--muted);text-align:center}.heat .rowname{font-size:12px;color:var(--muted)}.cell{width:24px;height:24px;border-radius:6px;background:#eceff3;border:1px solid #e5e7eb}.cell.on{background:var(--accent);border-color:var(--accent)}
 .reviewgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.reviewbox{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px}.reviewtitle{font-size:16px;font-weight:700;margin-bottom:10px}.reviewbox p{line-height:1.65;margin:0 0 12px}.reviewitem,.priority,.avoid{font-size:13px;line-height:1.65;margin-top:10px}.priority{background:#eef2ff;border-radius:10px;padding:10px}.avoid{background:#fff7ed;border-radius:10px;padding:10px}.badge{font-size:11px;font-weight:400;padding:2px 7px;border-radius:999px;background:#f3f4f6;color:var(--muted);margin-left:6px}
 .entry{display:grid;grid-template-columns:120px 120px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.entry:first-of-type{border-top:0}.cat{font-weight:700;color:var(--accent)}.note{font-size:12px;color:var(--muted);margin-top:3px}.sleepchart-wrap{width:100%;overflow-x:auto;padding:2px 0 6px}.sleepchart{width:100%;min-width:720px;height:340px;display:block}.sleep-axis{stroke:#dfe3ea;stroke-width:1}.sleep-grid{stroke:#eef0f4;stroke-width:1}.sleep-label{fill:var(--muted);font-size:11px}.sleep-line-wake{fill:none;stroke:#4f46e5;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sleep-line-bed{fill:none;stroke:#0f766e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sleep-avg-wake{fill:none;stroke:#4f46e5;stroke-width:1.8;stroke-dasharray:5 4;opacity:.55}.sleep-avg-bed{fill:none;stroke:#0f766e;stroke-width:1.8;stroke-dasharray:5 4;opacity:.55}.sleep-target{stroke:#c2410c;stroke-width:1.4;stroke-dasharray:7 5;opacity:.75}.sleep-target-label{fill:#c2410c;font-size:10px}.sleep-dot-wake{fill:#4f46e5}.sleep-dot-bed{fill:#0f766e}.sleep-dot-late{fill:#dc2626;stroke:#fff;stroke-width:1.5}.sleep-legend{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 8px;font-size:12px;color:var(--muted)}.sleep-legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:3px}.sleep-alert{margin:8px 0 4px;padding:9px 11px;border-radius:9px;background:#fff7ed;color:#9a3412;font-size:12px;line-height:1.55}
+.sleep-summary{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:12px 14px;margin:8px 0 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft);font-size:13px;line-height:1.7}.sleep-summary strong{font-size:14px}.sleep-summary .sleep-missing{color:var(--muted)}
 .callout{font-size:12px;color:var(--muted);line-height:1.6;background:#f8fafc;border-left:3px solid #cbd5e1;padding:9px 11px;border-radius:8px;margin-top:12px}
 @media(max-width:900px){.chartgrid,.reviewgrid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.metrics{grid-template-columns:1fr}.entry{grid-template-columns:1fr;gap:4px}.lock input{min-width:0;width:100%}.stackrow{grid-template-columns:42px 1fr 46px}.bar-chart{gap:3px}.barcol em{font-size:9px}}
 </style>
@@ -84,14 +85,21 @@ function renderTimeStructure(anchor){
   }).join("")}</div></div>`;
 }
 function renderSleep(anchor){
-  const ds=dateSeries(anchor,14),panel=document.getElementById("sleepPanel");
+  const panel=document.getElementById("sleepPanel");
+  const following=parseDate(anchor);following.setDate(following.getDate()+1);
+  const nextDay=fmt(following);
+  // 图表以次日早晨为横轴，向后多显示一天，确保所选日期当晚的入睡点可见。
+  const ds=dateSeries(nextDay,14);
+  const selected=sleepFor(anchor),nextWake=sleepFor(nextDay)?.wake_time;
+  const showTime=t=>t?esc(t.slice(0,5)):'未记录';
+  const summaryHtml=`<div class="sleep-summary"><strong>${esc(anchor)} 作息</strong><span>当日起床：<b>${showTime(selected?.wake_time)}</b></span><span>当晚入睡：<b>${showTime(selected?.bed_time)}</b></span><span>次日起床（${esc(nextDay)}）：<b>${showTime(nextWake)}</b></span></div>`;
 // 横轴按次日早晨的日期对齐：当天记录的“入睡时间”属于当晚至次日凌晨，因此绘在次日。
 const recs=ds.map(d=>{
   const prev=parseDate(d);prev.setDate(prev.getDate()-1);
   return {date:d,wakeRec:sleepFor(d),bedRec:sleepFor(fmt(prev)),bedLogDate:fmt(prev)};
 });
   if(!recs.some(x=>x.wakeRec?.wake_time||x.bedRec?.bed_time)){
-    panel.innerHTML=`<div class="sub">目前还没有足够作息记录。之后记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;
+    panel.innerHTML=summaryHtml+`<div class="sub">目前还没有足够作息记录。之后记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;
     return;
   }
   const WAKE_TARGET=33, BED_TARGET=24.5;
@@ -142,13 +150,13 @@ const recs=ds.map(d=>{
   if(lateWake.length){const [a,b]=lateWake.at(-1);alerts.push(`连续晚起 ${b-a+1} 天（${ds[a].slice(5)}–${ds[b].slice(5)}）`)}
   if(lateBed.length){const [a,b]=lateBed.at(-1);alerts.push(`连续晚睡 ${b-a+1} 天（${ds[a].slice(5)}–${ds[b].slice(5)}）`)}
   const alertHtml=alerts.length?`<div class="sleep-alert">⚠ ${alerts.join("；")}。建议先稳定作息窗口，而不是靠单日早起补偿。</div>`:"";
-  panel.innerHTML=`
+  panel.innerHTML=summaryHtml+`
     <div class="sleep-legend">
       <span><i style="background:#4f46e5"></i>起床时间</span>
       <span><i style="background:#0f766e"></i>入睡时间</span>
       <span><i style="background:#4f46e5;opacity:.55"></i>7天移动平均</span>
       <span><i style="background:#c2410c"></i>目标线</span>
-      <span>红点 = 晚于目标 · 缺失日期不连线</span><span>入睡按次日早晨对齐（如 10/19 夜 → 10/20）</span>
+      <span>红点 = 晚于目标 · 缺失日期不连线</span><span>横轴为次日早晨日期；所选日期的当晚入睡显示在下一天</span>
     </div>
     ${alertHtml}
     <div class="sleepchart-wrap"><svg class="sleepchart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="近14天起床与入睡时间折线图">${xGrid}${grid}${targetSvg}<line class="sleep-axis" x1="${L}" y1="${T}" x2="${L}" y2="${H-B}"></line><line class="sleep-axis" x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}"></line>${xLabels}${lineSvg(wakeAvg,"sleep-avg-wake")}${lineSvg(bedAvg,"sleep-avg-bed")}${lineSvg(wakeVals,"sleep-line-wake")}${lineSvg(bedVals,"sleep-line-bed")}${wakeDots}${bedDots}</svg></div>`;
