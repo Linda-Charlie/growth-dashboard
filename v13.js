@@ -1,0 +1,34 @@
+(()=>{'use strict';
+const $=id=>document.getElementById(id);let token='',db={entries:[],goals:[],sleep:[],reviews:[]},pending={};
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const notice=(s,bad=false)=>{const x=$('toast');x.textContent=s;x.style.color=bad?'#b91c1c':'#047857'};
+const fmtMin=n=>Number(n/60).toFixed(1)+' h';
+const minutes=(a,b)=>{if(!a||!b)return 0;const m=x=>{let t=x.slice(0,5).split(':').map(Number);return t[0]*60+t[1]};return Math.max(0,m(b)-m(a))};
+const isResearch=e=>/科研|组会/.test(e.category||'');
+const addLine=(el,main,sub='')=>{const d=document.createElement('div');d.className='item';const strong=document.createElement('strong');strong.textContent=main;d.append(strong);if(sub){const sm=document.createElement('small');sm.textContent=sub;d.append(sm);}el.append(d)};
+function findDate(arr,key,d){return arr.find(x=>x[key]===d)}
+function show(){let d=$('day').value, xs=db.entries.filter(x=>x.entry_date===d),research=xs.filter(isResearch).reduce((s,x)=>s+minutes(x.start_time,x.end_time),0),total=xs.reduce((s,x)=>s+minutes(x.start_time,x.end_time),0);const ms=$('metrics');ms.replaceChildren();const specs=[['科研相关',fmtMin(research)],['已记录',fmtMin(total)],['当日记录',xs.length+' 条'],['近7天科研',fmtMin(last7(d))]];for(const [label,value] of specs){const item=document.createElement('div');item.className='metric';const a=document.createElement('span');a.textContent=label;const b=document.createElement('strong');b.textContent=value;item.append(a,b);ms.append(item)}
+const list=$('dayEntries');list.replaceChildren();if(xs.length===0)addLine(list,'暂无时间记录','未录入不代表没有科研活动');for(const x of xs.slice().sort((a,b)=>a.start_time.localeCompare(b.start_time))){addLine(list,x.start_time.slice(0,5)+'–'+x.end_time.slice(0,5)+'  '+x.category+' · '+x.activity,x.note||'')}
+const detail=$('dayDetails');detail.replaceChildren();const g=findDate(db.goals,'goal_date',d),sl=findDate(db.sleep,'record_date',d),rv=findDate(db.reviews,'review_date',d);addLine(detail,'科研目标',g?.research_hours==null?'尚未录入':g.research_hours+' h');addLine(detail,'睡眠作息',sl?('起床 '+(sl.wake_time||'—')+' / 入睡 '+(sl.bed_time||'—')):'尚未录入');addLine(detail,'每日复盘',rv?.summary||'尚未录入');
+const bar=$('bars');bar.replaceChildren();const start=new Date(d+'T12:00:00');const arr=[];for(let i=13;i>=0;i--){const dt=new Date(start);dt.setDate(dt.getDate()-i);const key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');const n=db.entries.filter(e=>e.entry_date===key&&isResearch(e)).reduce((s,e)=>s+minutes(e.start_time,e.end_time),0);arr.push({key,n})}const max=Math.max(360,...arr.map(x=>x.n));for(const x of arr){const it=document.createElement('div');it.className='baritem';it.title=x.key+' 科研 '+fmtMin(x.n);const n=document.createElement('span');n.textContent=x.n?(x.n/60).toFixed(1):'·';const rect=document.createElement('div');rect.className='rect';rect.style.height=Math.max(2,Math.round(x.n/max*148))+'px';const t=document.createElement('span');t.textContent=x.key.slice(5);it.append(n,rect,t);bar.append(it)} }
+function last7(d){const x=new Date(d+'T12:00:00');let sum=0;for(let i=0;i<7;i++){const t=new Date(x);t.setDate(t.getDate()-i);const k=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');sum+=db.entries.filter(e=>e.entry_date===k&&isResearch(e)).reduce((s,e)=>s+minutes(e.start_time,e.end_time),0)}return sum}
+async function api(mode,payload=null,idem=''){const r=await fetch('https://eascyihwpsxzcccwfsur.supabase.co/functions/v1/growth-dashboard-v13?mode='+mode,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,...(idem?{'Idempotency-Key':idem}:{})},body:JSON.stringify(payload||{})});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error('HTTP '+r.status+': '+(d.error||'request_failed'));return d}
+async function refresh(){const out=await api('read');db=out;$('updated').textContent='已更新 · '+new Date().toLocaleString();show()}
+$('login').onclick=async()=>{const v=$('token').value.trim();if(!v)return notice('请输入 WRITE_TOKEN',true);token=v;$('token').value='';try{await refresh();$('gate').hidden=true;$('app').hidden=false;notice('已安全解锁');}catch(e){token='';notice('解锁失败：'+e.message,true)}};
+$('token').addEventListener('keydown',e=>{if(e.key==='Enter')$('login').click()});
+$('logout').onclick=()=>{token='';db={entries:[],goals:[],sleep:[],reviews:[]};$('app').hidden=true;$('gate').hidden=false;notice('已锁定。密钥已从页面内存状态清除。')};
+$('reload').onclick=async()=>{try{await refresh();notice('记录已刷新')}catch(e){notice(e.message,true)}};
+$('day').onchange=()=>{for(const id of ['timelineForm','goalsForm','sleepForm','reviewForm'])$(id).querySelector('input[type=date]').value=$('day').value;show()};
+for(const button of document.querySelectorAll('nav button'))button.addEventListener('click',()=>{for(const e of document.querySelectorAll('nav button'))e.classList.toggle('on',e===button);for(const e of document.querySelectorAll('.screen'))e.hidden=e.id!==button.dataset.tab});
+const types={timelineForm:'timeline.create',goalsForm:'daily_goal.upsert',sleepForm:'sleep_record.upsert',reviewForm:'daily_review.upsert'};
+for(const [id,op] of Object.entries(types))$(id).addEventListener('submit',async ev=>{ev.preventDefault();const form=ev.currentTarget;const data={};for(const [k,v] of new FormData(form)){if(String(v).trim()==='')continue;data[k]=['research_hours','english_minutes','exercise_minutes','sleep_quality','energy_score'].includes(k)?Number(v):String(v).trim()}
+if(op==='timeline.create'&&data.end_time<=data.start_time)return notice('结束时间必须晚于开始时间',true);
+if(op!=='timeline.create'&&Object.keys(data).length<=1+(op==='daily_review.upsert'?1:0))return notice('至少填写一项需要保存的内容',true);
+const payload={operation:op,data};const fingerprint=JSON.stringify(payload);if(!pending[id]||pending[id].fingerprint!==fingerprint)pending[id]={fingerprint,key:crypto.randomUUID()};
+if(!confirm('确认保存这条真实记录？\n'+JSON.stringify(data,null,2)))return;
+const btn=form.querySelector('.submit');btn.disabled=true;
+try{const r=await api('write',payload,pending[id].key);delete pending[id];notice('保存成功 · '+r.operation+' · '+r.record_key+(r.replayed?'（重复请求已安全处理）':''));await refresh();if(id==='timelineForm'){form.querySelector('[name=activity]').value='';form.querySelector('[name=note]').value='';}}
+catch(e){notice('保存未确认：'+e.message+'。不要在核查前修改内容重试。',true)}finally{btn.disabled=false}
+});
+$('day').value=today();for(const form of document.querySelectorAll('form'))form.querySelector('input[type=date]').value=today();
+})();
