@@ -53,7 +53,7 @@ input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}.lock inp
     <div class="metrics" id="metrics"></div>
     <div class="chartgrid">
       <section class="card chartcard"><h2>近 14 天科研相关投入</h2><div class="sub" id="researchTrendText"></div><div id="researchChart"></div></section>
-      <section class="card chartcard"><h2>习惯连续性</h2><div class="sub">科研相关≥6h / 英语或阅读 / 运动≥20min / 24:30前入睡</div><div id="habitHeat"></div></section>
+      <section class="card chartcard"><h2>习惯连续性</h2><div class="sub">科研相关≥6h / 英语或阅读 / 运动≥20min / 按当日目标入睡</div><div id="habitHeat"></div></section>
     </div>
     <section class="card"><h2>最近 7 天时间结构</h2><div class="legend" id="timeLegend"></div><div id="timeStructure"></div><div class="callout">每根柱子代表一天，柱内按实际记录时长堆叠；每个时间段直接标注类别与时长。科研相关仍区分明确科研、科研支持与科研/事务混合时段。</div></section>
     <section class="card"><h2>近期作息趋势</h2><div id="sleepPanel"></div></section>
@@ -95,10 +95,11 @@ function dateSeries(endDate,n=14){const end=parseDate(endDate),out=[];for(let i=
 function dayEntries(d){return entries.filter(x=>x.entry_date===d)}
 function dayStats(d){const xs=dayEntries(d),o={total:0,research:0,exercise:0,study:0,core:0,support:0,admin:0,rest:0,mixed:0,other:0};for(const x of xs){const m=mins(x.start_time,x.end_time),t=catType(x);o.total+=m;o[t]=(o[t]||0)+m;if(isResearchRelated(x))o.research+=m;if(t==="exercise")o.exercise+=m;if(t==="study")o.study+=m}return o}
 function sleepFor(d){return sleep.find(x=>x.record_date===d)}
-function bedBefore0030(rec){if(!rec?.bed_time)return false;const [h,m]=rec.bed_time.slice(0,5).split(":").map(Number);return h===0?m<=30:h>=18}
+function targetAtDate(d,key,fallback){const g=goals.filter(x=>x.goal_date<=d && x[key]).sort((a,b)=>b.goal_date.localeCompare(a.goal_date))[0];if(!g)return fallback;const [h,m]=g[key].slice(0,5).split(":").map(Number);return h+m/60+(h<12?24:0)}
+function bedWithinGoal(rec,d){if(!rec?.bed_time)return false;const [h,m]=rec.bed_time.slice(0,5).split(":").map(Number);return h+m/60+(h<12?24:0)<=targetAtDate(d,"target_bed_time",24.5)}
 function renderMetrics(s,e){const xs=entries.filter(x=>x.entry_date>=s&&x.entry_date<=e);let total=0,research=0,exercise=0,study=0;for(const x of xs){const m=mins(x.start_time,x.end_time),t=catType(x);total+=m;if(isResearchRelated(x))research+=m;if(t==="exercise")exercise+=m;if(t==="study")study+=m}document.getElementById("metrics").innerHTML=[["科研相关",(research/60).toFixed(1)+" h"],["已记录",(total/60).toFixed(1)+" h"],["运动",Math.round(exercise)+" min"],["英语/阅读",Math.round(study)+" min"]].map(([a,b])=>`<div class="card"><div class="label">${a}</div><div class="metric">${b}</div></div>`).join("")}
 function renderResearchTrend(anchor){const ds=dateSeries(anchor),vals=ds.map(d=>dayStats(d).research/60),max=Math.max(1,...vals),avg7=vals.slice(-7).reduce((a,b)=>a+b,0)/7;document.getElementById("researchTrendText").textContent=`含混合科研/事务时段 · 近7日平均 ${avg7.toFixed(1)} h/天`;document.getElementById("researchChart").innerHTML=`<div class="bar-chart">${ds.map((d,i)=>`<div class="barcol" title="${d} · 科研相关 ${vals[i].toFixed(1)} h"><span class="val">${vals[i]?vals[i].toFixed(1):""}</span><div class="bar" style="height:${Math.max(2,vals[i]/max*155)}px"></div><em>${d.slice(5)}</em></div>`).join("")}</div>`}
-function renderHabits(anchor){const ds=dateSeries(anchor);let html=`<div class="heatwrap"><div class="heat"><div></div>${ds.map(d=>`<div class="date">${d.slice(8)}</div>`).join("")}`;const rows=[{name:"科研相关 ≥6h",f:d=>dayStats(d).research>=360},{name:"英语/阅读",f:d=>dayStats(d).study>0},{name:"运动 ≥20m",f:d=>dayStats(d).exercise>=20},{name:"按时睡",f:d=>bedBefore0030(sleepFor(d))}];for(const r of rows){html+=`<div class="rowname">${r.name}</div>${ds.map(d=>`<div class="cell ${r.f(d)?'on':''}" title="${d} ${r.name}"></div>`).join("")}`}html+=`</div></div>`;document.getElementById("habitHeat").innerHTML=html}
+function renderHabits(anchor){const ds=dateSeries(anchor);let html=`<div class="heatwrap"><div class="heat"><div></div>${ds.map(d=>`<div class="date">${d.slice(8)}</div>`).join("")}`;const rows=[{name:"科研相关 ≥6h",f:d=>dayStats(d).research>=360},{name:"英语/阅读",f:d=>dayStats(d).study>0},{name:"运动 ≥20m",f:d=>dayStats(d).exercise>=20},{name:"按时睡",f:d=>bedWithinGoal(sleepFor(d),d)}];for(const r of rows){html+=`<div class="rowname">${r.name}</div>${ds.map(d=>`<div class="cell ${r.f(d)?'on':''}" title="${d} ${r.name}"></div>`).join("")}`}html+=`</div></div>`;document.getElementById("habitHeat").innerHTML=html}
 const typeMeta={core:["明确纯科研","#4f46e5"],support:["组会/科研支持","#7c3aed"],study:["英语/阅读","#0f766e"],admin:["纯事务","#c2410c"],exercise:["运动","#15803d"],rest:["休息/吃饭","#94a3b8"],mixed:["科研/事务混合","#6366f1"],other:["其他","#cbd5e1"]};
 function renderTimeStructure(anchor){
   const ds=dateSeries(anchor,7),keys=Object.keys(typeMeta);
@@ -137,7 +138,7 @@ const recs=ds.map(d=>{
     panel.innerHTML=summaryHtml+`<div class="sub">目前还没有足够作息记录。之后记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;
     return;
   }
-  const WAKE_TARGET=33, BED_TARGET=24.5;
+  const WAKE_TARGET=targetAtDate(anchor,"target_wake_time",33), BED_TARGET=targetAtDate(anchor,"target_bed_time",24.5);
   // 固定夜间坐标：22:00 在顶部，次日 12:00 在底部（22–36）。
   const toHour=(t,isBed=false)=>{
     if(!t)return null;
@@ -169,18 +170,18 @@ const recs=ds.map(d=>{
   const xGrid=ds.map((_,i)=>i%2===0?`<line x1="${x(i)}" y1="${T}" x2="${x(i)}" y2="${H-B}" stroke="#f2f4f7" stroke-width="1"></line>`:"").join("");
   const xLabels=ds.map((d,i)=>i%2===0||i===ds.length-1?`<text class="sleep-label" x="${x(i)}" y="${H-12}" text-anchor="middle">${d.slice(5)}</text>`:"").join("");
   const targetSvg=[
-    [WAKE_TARGET,"09:00 起床目标"],
-    [BED_TARGET,"00:30 入睡目标"]
+    [WAKE_TARGET,fmtHour(WAKE_TARGET)+" 起床目标"],
+    [BED_TARGET,fmtHour(BED_TARGET)+" 入睡目标"]
   ].filter(([v])=>v>=ymin&&v<=ymax).map(([v,label])=>`<line class="sleep-target" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-target-label" x="${W-R-2}" y="${y(v)-4}" text-anchor="end">${label}</text>`).join("");
-  const wakeDots=wakeVals.map((v,i)=>v===null?"":`<circle class="${v>WAKE_TARGET?'sleep-dot-late':'sleep-dot-wake'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${ds[i]} 起床 ${recs[i].wakeRec.wake_time.slice(0,5)}${v>WAKE_TARGET?' · 晚于目标':''}</title></circle>`).join("");
-  const bedDots=bedVals.map((v,i)=>v===null?"":`<circle class="${v>BED_TARGET?'sleep-dot-late':'sleep-dot-bed'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${recs[i].bedLogDate} 晚间 → ${ds[i]} 早晨 · 入睡 ${recs[i].bedRec.bed_time.slice(0,5)}${v>BED_TARGET?' · 晚于目标':''}</title></circle>`).join("");
+  const wakeDots=wakeVals.map((v,i)=>v===null?"":`<circle class="${v>targetAtDate(ds[i],"target_wake_time",33)?'sleep-dot-late':'sleep-dot-wake'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${ds[i]} 起床 ${recs[i].wakeRec.wake_time.slice(0,5)}${v>targetAtDate(ds[i],"target_wake_time",33)?' · 晚于目标':''}</title></circle>`).join("");
+  const bedDots=bedVals.map((v,i)=>v===null?"":`<circle class="${v>targetAtDate(recs[i].bedLogDate,"target_bed_time",24.5)?'sleep-dot-late':'sleep-dot-bed'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${recs[i].bedLogDate} 晚间 → ${ds[i]} 早晨 · 入睡 ${recs[i].bedRec.bed_time.slice(0,5)}${v>targetAtDate(recs[i].bedLogDate,"target_bed_time",24.5)?' · 晚于目标':''}</title></circle>`).join("");
   const streaks=(vals,test)=>{
     const out=[];let s=null;
-    vals.forEach((v,i)=>{if(v!==null&&test(v)){if(s===null)s=i}else{if(s!==null&&i-s>=2)out.push([s,i-1]);s=null}});
+    vals.forEach((v,i)=>{if(v!==null&&test(v,i)){if(s===null)s=i}else{if(s!==null&&i-s>=2)out.push([s,i-1]);s=null}});
     if(s!==null&&vals.length-s>=2)out.push([s,vals.length-1]);
     return out;
   };
-  const lateWake=streaks(wakeVals,v=>v>WAKE_TARGET),lateBed=streaks(bedVals,v=>v>BED_TARGET);
+  const lateWake=streaks(wakeVals,(v,i)=>v>targetAtDate(ds[i],"target_wake_time",33)),lateBed=streaks(bedVals,(v,i)=>v>targetAtDate(recs[i].bedLogDate,"target_bed_time",24.5));
   const alerts=[];
   if(lateWake.length){const [a,b]=lateWake.at(-1);alerts.push(`连续晚起 ${b-a+1} 天（${ds[a].slice(5)}–${ds[b].slice(5)}）`)}
   if(lateBed.length){const [a,b]=lateBed.at(-1);alerts.push(`连续晚睡 ${b-a+1} 天（${ds[a].slice(5)}–${ds[b].slice(5)}）`)}
@@ -191,7 +192,7 @@ const recs=ds.map(d=>{
       <span><i style="background:#0f766e"></i>入睡时间</span>
       <span><i style="background:#4f46e5;opacity:.55"></i>7天移动平均</span>
       <span><i style="background:#c2410c"></i>目标线</span>
-      <span>红点 = 晚于目标 · 缺失日期不连线</span><span>横轴为次日早晨日期；所选日期的当晚入睡显示在下一天</span>
+      <span>目标线对应所选日期；红点按各日期生效目标判断 · 缺失日期不连线</span><span>横轴为次日早晨日期；所选日期的当晚入睡显示在下一天</span>
     </div>
     ${alertHtml}
     <div class="sleepchart-wrap"><svg class="sleepchart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="近14天起床与入睡时间折线图">${xGrid}${grid}${targetSvg}<line class="sleep-axis" x1="${L}" y1="${T}" x2="${L}" y2="${H-B}"></line><line class="sleep-axis" x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}"></line>${xLabels}${lineSvg(wakeAvg,"sleep-avg-wake")}${lineSvg(bedAvg,"sleep-avg-bed")}${lineSvg(wakeVals,"sleep-line-wake")}${lineSvg(bedVals,"sleep-line-bed")}${wakeDots}${bedDots}</svg></div>`;
