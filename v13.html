@@ -1,7 +1,270 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>成长仪表盘 V13.3</title><link rel="stylesheet" href="./v13.css"></head><body><div class="wrap"><header><div class="eyebrow">PERSONAL RESEARCH SYSTEM · V13.3</div><h1>成长仪表盘 <span>V13.3</span></h1><p>时间记录 · 科研目标 · 作息 · 每日复盘</p></header><section class="card gate" id="gate"><h2>安全访问</h2><p>输入私有 WRITE_TOKEN 解锁。令牌只保留在当前网页内存中，不写入浏览器存储，也不会嵌入公开源码。</p><div class="inline"><input type="password" id="token" placeholder="WRITE_TOKEN（不是 HASH）" autocomplete="off"><button id="login">解锁仪表盘</button></div><small>现有 V12 页面保持不变。这里使用单独的 V13 写入权限。</small></section><section id="app" hidden><div class="toolbar"><nav><button data-tab="overview" class="on">总览</button><button data-tab="timeline">时间记录</button><button data-tab="goals">每日目标</button><button data-tab="sleep">作息睡眠</button><button data-tab="review">每日复盘</button></nav><button class="light" id="reload">刷新</button><button class="light" id="logout">锁定</button></div><div class="datebar"><label>查看日期 <input id="day" type="date"></label><span id="updated"></span></div>
-<div id="overview" class="screen"><div id="metrics" class="metrics"></div><section class="card"><h2>近 14 日科研时间</h2><div class="bars" id="bars"></div><small>仅统计已录入的“科研 / 科研支持 / 组会”时段；未录入不代表没有工作。</small></section><div class="twocol"><section class="card"><h2>所选日期：时间线</h2><div id="dayEntries" class="entries"></div></section><section class="card"><h2>目标、睡眠与复盘</h2><div id="dayDetails" class="entries"></div></section></div></div>
-<div id="timeline" class="screen" hidden><section class="card"><h2>新增时间记录</h2><p>只填写真实发生的时间段；不自动推断聊天时间。</p><form id="timelineForm" class="formgrid"><label>日期<input type="date" name="entry_date" required></label><label>开始时间<input type="time" name="start_time" required></label><label>结束时间<input type="time" name="end_time" required></label><label>类别<select name="category"><option>科研</option><option>科研支持</option><option>组会</option><option>阅读</option><option>英语</option><option>运动</option><option>事务</option><option>吃饭/休息</option><option>其他</option></select></label><label class="full">活动内容<input name="activity" maxlength="500" required placeholder="例如：整理全球卤虫风速标准化实验结果"></label><label class="full">备注（可选）<textarea name="note" rows="3" maxlength="4000"></textarea></label><button class="submit">确认新增</button></form></section></div>
-<div id="goals" class="screen" hidden><section class="card"><h2>每日目标 · 部分更新</h2><p>只提交已填写的项目，空白字段保留数据库中的原值。</p><form id="goalsForm" class="formgrid"><label>日期<input type="date" name="goal_date" required></label><label>科研目标（小时）<input type="number" name="research_hours" min="0" max="24" step="0.5"></label><label>英语目标（分钟）<input type="number" name="english_minutes" min="0" max="1440" step="1"></label><label>运动目标（分钟）<input type="number" name="exercise_minutes" min="0" max="1440" step="1"></label><label>目标起床时间<input type="time" name="target_wake_time"></label><label>目标睡觉时间<input type="time" name="target_bed_time"></label><button class="submit">保存目标</button></form></section></div>
-<div id="sleep" class="screen" hidden><section class="card"><h2>每日作息 · 部分更新</h2><p>按日期记录当天起床和当晚入睡的时间。</p><form id="sleepForm" class="formgrid"><label>日期<input type="date" name="record_date" required></label><label>起床时间<input type="time" name="wake_time"></label><label>入睡时间<input type="time" name="bed_time"></label><label>睡眠质量（1–5）<input type="number" name="sleep_quality" min="1" max="5" step="1"></label><label>精力评分（1–5）<input type="number" name="energy_score" min="1" max="5" step="1"></label><button class="submit">保存作息</button></form></section></div>
-<div id="review" class="screen" hidden><section class="card"><h2>每日复盘 · 部分更新</h2><p>空白字段保留原值；请先确认所选日期。</p><form id="reviewForm" class="formgrid"><label>日期<input type="date" name="review_date" required></label><label>状态<select name="status"><option value="final">正式</option><option value="provisional">暂定</option><option value="completed">已完成</option></select></label><label class="full">今日总结<textarea name="summary" rows="3" maxlength="6000"></textarea></label><label class="full">关键科研结论<textarea name="key_research_conclusion" rows="2" maxlength="6000"></textarea></label><label class="full">今日做得好<textarea name="wins" rows="2" maxlength="6000"></textarea></label><label class="full">问题与阻碍<textarea name="issues" rows="2" maxlength="6000"></textarea></label><label class="full">明日最重要任务<textarea name="top_priority_next_day" rows="2" maxlength="6000"></textarea></label><label class="full">明日其他任务<textarea name="secondary_tasks" rows="2" maxlength="6000"></textarea></label><label class="full">英语阅读计划<textarea name="english_reading_plan" rows="2" maxlength="6000"></textarea></label><label class="full">身心健康计划<textarea name="wellbeing_plan" rows="2" maxlength="6000"></textarea></label><label class="full">明日避免事项<textarea name="avoid_tomorrow" rows="2" maxlength="6000"></textarea></label><button class="submit">保存复盘</button></form></section></div>
-</section><div class="toast" id="toast" role="status" aria-live="polite"></div><footer>V13.3 · 仅用户输入令牌后才允许读取/写入 · 不会自动记录在线时长</footer></div><script src="./v13.js" defer></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>成长仪表盘 V13.3 · 完整分析与安全写入</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#222;--muted:#707789;--line:#e5e7eb;--accent:#4f46e5;--soft:#f9fafb}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--text)}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}.hero,.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px}
+h1{margin:0 0 6px;font-size:28px}h2{font-size:18px;margin:0 0 14px}h3{margin:0 0 8px}.sub{color:var(--muted);font-size:13px;line-height:1.6}
+.tabs,.controls,.lock,.legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.tabs{margin:14px 0}.controls{margin-bottom:14px}.lock{margin-top:12px}.legend{gap:14px;margin:8px 0 12px;font-size:12px;color:var(--muted)}
+button{padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer}button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+input{padding:8px 10px;border:1px solid var(--line);border-radius:10px}.lock input{min-width:280px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric{font-size:26px;font-weight:700;margin-top:4px}.label{font-size:12px;color:var(--muted)}
+.chartgrid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-bottom:14px}.chartcard{margin-bottom:0;min-width:0}.bar-chart{height:230px;display:flex;align-items:flex-end;gap:7px;padding:18px 4px 26px;border-bottom:1px solid var(--line)}
+.barcol{height:186px;flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative}.bar{width:72%;max-width:34px;background:var(--accent);border-radius:7px 7px 2px 2px;min-height:2px}.barcol em{position:absolute;bottom:-24px;font-size:10px;color:var(--muted);font-style:normal;white-space:nowrap;transform:rotate(-45deg)}.barcol .val{font-size:10px;color:var(--muted);margin-bottom:4px;min-height:12px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}.time-vertical-wrap{overflow-x:auto;padding-bottom:6px}.time-vertical{height:360px;min-width:760px;display:flex;align-items:flex-end;gap:18px;padding:28px 14px 34px;border-bottom:1px solid var(--line)}.time-day{flex:1;min-width:78px;height:290px;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch;position:relative}.time-stack{height:250px;display:flex;flex-direction:column-reverse;border-radius:10px 10px 4px 4px;overflow:hidden;background:#eef0f4;border:1px solid #e5e7eb}.time-seg{display:flex;align-items:center;justify-content:center;text-align:center;padding:2px 3px;font-size:10px;font-weight:700;line-height:1.15;color:#fff;overflow:hidden}.time-seg.light{color:#263238}.time-date{position:absolute;bottom:-26px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted)}.time-total{position:absolute;top:-22px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted);font-weight:700}
+.heatwrap{overflow-x:auto;padding-bottom:4px}.heat{display:grid;grid-template-columns:92px repeat(14,28px);gap:5px;align-items:center;min-width:520px}.heat .date{font-size:10px;color:var(--muted);text-align:center}.heat .rowname{font-size:12px;color:var(--muted)}.cell{width:24px;height:24px;border-radius:6px;background:#eceff3;border:1px solid #e5e7eb}.cell.on{background:var(--accent);border-color:var(--accent)}
+.reviewgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.reviewbox{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:16px}.reviewtitle{font-size:16px;font-weight:700;margin-bottom:10px}.reviewbox p{line-height:1.65;margin:0 0 12px}.reviewitem,.priority,.avoid{font-size:13px;line-height:1.65;margin-top:10px}.priority{background:#eef2ff;border-radius:10px;padding:10px}.avoid{background:#fff7ed;border-radius:10px;padding:10px}.badge{font-size:11px;font-weight:400;padding:2px 7px;border-radius:999px;background:#f3f4f6;color:var(--muted);margin-left:6px}
+.entry{display:grid;grid-template-columns:120px 120px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.entry:first-of-type{border-top:0}.cat{font-weight:700;color:var(--accent)}.note{font-size:12px;color:var(--muted);margin-top:3px}.sleepchart-wrap{width:100%;overflow-x:auto;padding:2px 0 6px}.sleepchart{width:100%;min-width:720px;height:340px;display:block}.sleep-axis{stroke:#dfe3ea;stroke-width:1}.sleep-grid{stroke:#eef0f4;stroke-width:1}.sleep-label{fill:var(--muted);font-size:11px}.sleep-line-wake{fill:none;stroke:#4f46e5;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sleep-line-bed{fill:none;stroke:#0f766e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.sleep-avg-wake{fill:none;stroke:#4f46e5;stroke-width:1.8;stroke-dasharray:5 4;opacity:.55}.sleep-avg-bed{fill:none;stroke:#0f766e;stroke-width:1.8;stroke-dasharray:5 4;opacity:.55}.sleep-target{stroke:#c2410c;stroke-width:1.4;stroke-dasharray:7 5;opacity:.75}.sleep-target-label{fill:#c2410c;font-size:10px}.sleep-dot-wake{fill:#4f46e5}.sleep-dot-bed{fill:#0f766e}.sleep-dot-late{fill:#dc2626;stroke:#fff;stroke-width:1.5}.sleep-legend{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 8px;font-size:12px;color:var(--muted)}.sleep-legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:3px}.sleep-alert{margin:8px 0 4px;padding:9px 11px;border-radius:9px;background:#fff7ed;color:#9a3412;font-size:12px;line-height:1.55}
+.sleep-summary{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:12px 14px;margin:8px 0 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft);font-size:13px;line-height:1.7}.sleep-summary strong{font-size:14px}.sleep-summary .sleep-missing{color:var(--muted)}
+.callout{font-size:12px;color:var(--muted);line-height:1.6;background:#f8fafc;border-left:3px solid #cbd5e1;padding:9px 11px;border-radius:8px;margin-top:12px}
+@media(max-width:900px){.chartgrid,.reviewgrid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.metrics{grid-template-columns:1fr}.entry{grid-template-columns:1fr;gap:4px}.lock input{min-width:0;width:100%}.stackrow{grid-template-columns:42px 1fr 46px}.bar-chart{gap:3px}.barcol em{font-size:9px}}
+
+/* V13.3: write controls scoped to this version; V12 charts/styles unchanged. */
+.v13-write { scroll-margin-top:18px; }
+.v13-write .v13-edit-panel{background:#fbfbfe;border:1px solid #e5e7eb;border-radius:12px;margin:12px 0;overflow:hidden}
+.v13-write .v13-edit-panel summary{padding:15px 16px;font-size:14px;font-weight:700;cursor:pointer}
+.v13-write .v13-edit-panel[open] summary{border-bottom:1px solid #e5e7eb;background:#f3f2ff}
+.v13-write .formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:16px}
+.v13-write .formgrid label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:#525669;min-width:0}
+.v13-write .formgrid label.full{grid-column:1/-1}
+.v13-write .formgrid input,.v13-write .formgrid select,.v13-write .formgrid textarea{width:100%;font:inherit;font-size:14px;padding:10px;border-radius:9px;border:1px solid #d4d8e2;background:white;min-width:0}
+.v13-write .formgrid .submit{justify-self:start;align-self:end;border:0;border-radius:9px;background:#4f46e5;color:white;font-weight:650;padding:10px 20px}
+.v13-write .formgrid .submit:disabled{opacity:.55}
+.v13-save-status{font-size:13px;white-space:pre-wrap;min-height:18px;margin:8px;color:#047857}
+.v13-go-editor{display:inline-block;padding:9px 14px;margin:6px 0 2px;border:1px solid #c7d2fe;border-radius:10px;background:#f5f3ff;color:#4338ca;text-decoration:none;font-weight:650;font-size:13px}
+@media(max-width:640px){.v13-write .formgrid{grid-template-columns:1fr}.v13-write .formgrid label.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>成长仪表盘 <span style='font-size:14px;color:#64748b'>V13.3</span></h1>
+    <div class="sub">V12 完整分析面板 + V13.3 新增/更新 · 数据来自 Supabase</div>
+    <div class="lock"><input id="accessCode" type="password" placeholder="输入 V13 WRITE_TOKEN（不是旧版密码）" autocomplete="off"><button id="unlockBtn">解锁数据</button></div>
+    <div class="sub" id="status">请输入 V13 WRITE_TOKEN 解锁；仅留存在本页内存</div>
+  </div>
+  <div id="app" style="display:none">
+    <a class="v13-go-editor" href="#v13Editor">新增 / 更新记录</a>
+    <div class="tabs" id="tabs"><button data-mode="day" class="active">日</button><button data-mode="week">周</button><button data-mode="month">月</button><button data-mode="quarter">季度</button><button data-mode="year">年</button></div>
+    <div class="controls"><label>查看日期 <input type="date" id="datePick"></label><span class="sub" id="rangeText"></span></div>
+    <div class="metrics" id="metrics"></div>
+    <div class="chartgrid">
+      <section class="card chartcard"><h2>近 14 天科研相关投入</h2><div class="sub" id="researchTrendText"></div><div id="researchChart"></div></section>
+      <section class="card chartcard"><h2>习惯连续性</h2><div class="sub">科研相关≥6h / 英语或阅读 / 运动≥20min / 24:30前入睡</div><div id="habitHeat"></div></section>
+    </div>
+    <section class="card"><h2>最近 7 天时间结构</h2><div class="legend" id="timeLegend"></div><div id="timeStructure"></div><div class="callout">每根柱子代表一天，柱内按实际记录时长堆叠；每个时间段直接标注类别与时长。科研相关仍区分明确科研、科研支持与科研/事务混合时段。</div></section>
+    <section class="card"><h2>近期作息趋势</h2><div id="sleepPanel"></div></section>
+    <section class="card" id="reviewPanel" style="display:none"><h2>所选日期复盘</h2><div id="reviewContent"></div></section>
+    <div id="detail"></div>
+<section class="card v13-write" id="v13Editor">
+ <h2>新增与更新记录 <span class="sub">V13.3 安全写入</span></h2>
+ <p class="sub">以下记录直接保存到同一个 Supabase 数据库，保存后自动刷新上方全部 V12 分析图表。只填真实发生的时段；空白字段不覆盖旧值。</p>
+ <details class="v13-edit-panel"><summary>时间记录 · 新增真实工作时段</summary><form id="timelineForm" class="formgrid"><label>日期<input type="date" name="entry_date" required></label><label>开始时间<input type="time" name="start_time" required></label><label>结束时间<input type="time" name="end_time" required></label><label>类别<select name="category"><option>科研</option><option>科研支持</option><option>组会</option><option>阅读</option><option>英语</option><option>运动</option><option>事务</option><option>吃饭/休息</option><option>其他</option></select></label><label class="full">活动内容<input name="activity" maxlength="500" required placeholder="例如：整理全球卤虫风速标准化实验结果"></label><label class="full">备注（可选）<textarea name="note" rows="3" maxlength="4000"></textarea></label><button class="submit">确认新增</button></form></details>
+<details class="v13-edit-panel"><summary>每日目标 · 设置或部分更新</summary><form id="goalsForm" class="formgrid"><label>日期<input type="date" name="goal_date" required></label><label>科研目标（小时）<input type="number" name="research_hours" min="0" max="24" step="0.5"></label><label>英语目标（分钟）<input type="number" name="english_minutes" min="0" max="1440" step="1"></label><label>运动目标（分钟）<input type="number" name="exercise_minutes" min="0" max="1440" step="1"></label><label>目标起床时间<input type="time" name="target_wake_time"></label><label>目标睡觉时间<input type="time" name="target_bed_time"></label><button class="submit">保存目标</button></form></details>
+<details class="v13-edit-panel"><summary>睡眠作息 · 设置或部分更新</summary><form id="sleepForm" class="formgrid"><label>日期<input type="date" name="record_date" required></label><label>起床时间<input type="time" name="wake_time"></label><label>入睡时间<input type="time" name="bed_time"></label><label>睡眠质量（1–5）<input type="number" name="sleep_quality" min="1" max="5" step="1"></label><label>精力评分（1–5）<input type="number" name="energy_score" min="1" max="5" step="1"></label><button class="submit">保存作息</button></form></details>
+<details class="v13-edit-panel"><summary>每日复盘 · 设置或部分更新</summary><form id="reviewForm" class="formgrid"><label>日期<input type="date" name="review_date" required></label><label>状态<select name="status"><option value="final">正式</option><option value="provisional">暂定</option><option value="completed">已完成</option></select></label><label class="full">今日总结<textarea name="summary" rows="3" maxlength="6000"></textarea></label><label class="full">关键科研结论<textarea name="key_research_conclusion" rows="2" maxlength="6000"></textarea></label><label class="full">今日做得好<textarea name="wins" rows="2" maxlength="6000"></textarea></label><label class="full">问题与阻碍<textarea name="issues" rows="2" maxlength="6000"></textarea></label><label class="full">明日最重要任务<textarea name="top_priority_next_day" rows="2" maxlength="6000"></textarea></label><label class="full">明日其他任务<textarea name="secondary_tasks" rows="2" maxlength="6000"></textarea></label><label class="full">英语阅读计划<textarea name="english_reading_plan" rows="2" maxlength="6000"></textarea></label><label class="full">身心健康计划<textarea name="wellbeing_plan" rows="2" maxlength="6000"></textarea></label><label class="full">明日避免事项<textarea name="avoid_tomorrow" rows="2" maxlength="6000"></textarea></label><button class="submit">保存复盘</button></form></details>
+
+ <div id="saveStatus" class="v13-save-status" aria-live="polite"></div>
+</section>
+  </div>
+</div>
+<script>
+const API="https://eascyihwpsxzcccwfsur.supabase.co/functions/v1/growth-dashboard-v13";
+let V13_WRITE_TOKEN="";
+const V13_pending={};
+async function V13_request(mode,payload={},idem=""){
+ if(!V13_WRITE_TOKEN)throw new Error("尚未解锁");
+ const r=await fetch(API+"?mode="+mode,{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","Authorization":"Bearer "+V13_WRITE_TOKEN,...(idem?{"Idempotency-Key":idem}:{})},body:JSON.stringify(payload)});
+ let data=null;try{data=await r.json()}catch{}
+ if(!r.ok)throw new Error("HTTP "+r.status+" · "+(data?.error||"request_failed"));
+ return data;
+}
+let entries=[],reviews=[],sleep=[],goals=[],mode="day";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+function parseDate(s){return new Date(s+"T00:00:00")}
+function fmt(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),da=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${da}`}
+function monday(d){const x=new Date(d),n=(x.getDay()+6)%7;x.setDate(x.getDate()-n);return x}
+function rangeFor(date,m){const d=parseDate(date);let s,e;if(m==="day"){s=e=d}else if(m==="week"){s=monday(d);e=new Date(s);e.setDate(e.getDate()+6)}else if(m==="month"){s=new Date(d.getFullYear(),d.getMonth(),1);e=new Date(d.getFullYear(),d.getMonth()+1,0)}else if(m==="quarter"){const q=Math.floor(d.getMonth()/3)*3;s=new Date(d.getFullYear(),q,1);e=new Date(d.getFullYear(),q+3,0)}else{s=new Date(d.getFullYear(),0,1);e=new Date(d.getFullYear(),11,31)}return[fmt(s),fmt(e)]}
+function mins(a,b){const [ah,am]=a.slice(0,5).split(":").map(Number),[bh,bm]=b.slice(0,5).split(":").map(Number);return Math.max(0,bh*60+bm-ah*60-am)}
+function catType(x){const c=String(x.category||""),a=String(x.activity||"");if(c==="科研")return"core";if(c==="科研支持"||c==="组会")return"support";if(/组会|科研\/组会/.test(c+a))return"support";if(c.includes("科研"))return"mixed";if(/英语|阅读|文献|学习/.test(c+a))return"study";if(/运动|跑步|健身|散步/.test(c+a))return"exercise";if(/休息|睡|午休|吃饭/.test(c+a))return"rest";if(/事务|报奖|行政/.test(c+a))return"admin";return"other"}
+function isResearchRelated(x){const t=catType(x);return t==="core"||t==="support"||t==="mixed"}
+function dateSeries(endDate,n=14){const end=parseDate(endDate),out=[];for(let i=n-1;i>=0;i--){const d=new Date(end);d.setDate(end.getDate()-i);out.push(fmt(d))}return out}
+function dayEntries(d){return entries.filter(x=>x.entry_date===d)}
+function dayStats(d){const xs=dayEntries(d),o={total:0,research:0,exercise:0,study:0,core:0,support:0,admin:0,rest:0,mixed:0,other:0};for(const x of xs){const m=mins(x.start_time,x.end_time),t=catType(x);o.total+=m;o[t]=(o[t]||0)+m;if(isResearchRelated(x))o.research+=m;if(t==="exercise")o.exercise+=m;if(t==="study")o.study+=m}return o}
+function sleepFor(d){return sleep.find(x=>x.record_date===d)}
+function bedBefore0030(rec){if(!rec?.bed_time)return false;const [h,m]=rec.bed_time.slice(0,5).split(":").map(Number);return h===0?m<=30:h>=18}
+function renderMetrics(s,e){const xs=entries.filter(x=>x.entry_date>=s&&x.entry_date<=e);let total=0,research=0,exercise=0,study=0;for(const x of xs){const m=mins(x.start_time,x.end_time),t=catType(x);total+=m;if(isResearchRelated(x))research+=m;if(t==="exercise")exercise+=m;if(t==="study")study+=m}document.getElementById("metrics").innerHTML=[["科研相关",(research/60).toFixed(1)+" h"],["已记录",(total/60).toFixed(1)+" h"],["运动",Math.round(exercise)+" min"],["英语/阅读",Math.round(study)+" min"]].map(([a,b])=>`<div class="card"><div class="label">${a}</div><div class="metric">${b}</div></div>`).join("")}
+function renderResearchTrend(anchor){const ds=dateSeries(anchor),vals=ds.map(d=>dayStats(d).research/60),max=Math.max(1,...vals),avg7=vals.slice(-7).reduce((a,b)=>a+b,0)/7;document.getElementById("researchTrendText").textContent=`含混合科研/事务时段 · 近7日平均 ${avg7.toFixed(1)} h/天`;document.getElementById("researchChart").innerHTML=`<div class="bar-chart">${ds.map((d,i)=>`<div class="barcol" title="${d} · 科研相关 ${vals[i].toFixed(1)} h"><span class="val">${vals[i]?vals[i].toFixed(1):""}</span><div class="bar" style="height:${Math.max(2,vals[i]/max*155)}px"></div><em>${d.slice(5)}</em></div>`).join("")}</div>`}
+function renderHabits(anchor){const ds=dateSeries(anchor);let html=`<div class="heatwrap"><div class="heat"><div></div>${ds.map(d=>`<div class="date">${d.slice(8)}</div>`).join("")}`;const rows=[{name:"科研相关 ≥6h",f:d=>dayStats(d).research>=360},{name:"英语/阅读",f:d=>dayStats(d).study>0},{name:"运动 ≥20m",f:d=>dayStats(d).exercise>=20},{name:"按时睡",f:d=>bedBefore0030(sleepFor(d))}];for(const r of rows){html+=`<div class="rowname">${r.name}</div>${ds.map(d=>`<div class="cell ${r.f(d)?'on':''}" title="${d} ${r.name}"></div>`).join("")}`}html+=`</div></div>`;document.getElementById("habitHeat").innerHTML=html}
+const typeMeta={core:["明确纯科研","#4f46e5"],support:["组会/科研支持","#7c3aed"],study:["英语/阅读","#0f766e"],admin:["纯事务","#c2410c"],exercise:["运动","#15803d"],rest:["休息/吃饭","#94a3b8"],mixed:["科研/事务混合","#6366f1"],other:["其他","#cbd5e1"]};
+function renderTimeStructure(anchor){
+  const ds=dateSeries(anchor,7),keys=Object.keys(typeMeta);
+  document.getElementById("timeLegend").innerHTML=keys.map(k=>`<span><i class="sw" style="background:${typeMeta[k][1]}"></i>${typeMeta[k][0]}</span>`).join("");
+  const labelShort={core:"科研",support:"科研支持",study:"阅读/学习",admin:"事务",exercise:"运动",rest:"休息/吃饭",mixed:"科研/事务",other:"其他"};
+  const maxTotal=Math.max(1,...ds.map(d=>dayStats(d).total));
+  const lightKeys=new Set(["rest","other"]);
+  document.getElementById("timeStructure").innerHTML=`<div class="time-vertical-wrap"><div class="time-vertical">${ds.map(d=>{
+    const s=dayStats(d),total=s.total||0,stackHeight=Math.max(6,total/maxTotal*250);
+    const segs=keys.map(k=>{
+      const v=s[k]||0;
+      if(!v)return "";
+      const pct=v/(total||1)*100;
+      const hrs=v/60;
+      const txt=hrs>=1?`${labelShort[k]} ${hrs.toFixed(1)}h`:`${labelShort[k]} ${Math.round(v)}m`;
+      return `<div class="time-seg ${lightKeys.has(k)?"light":""}" title="${typeMeta[k][0]} · ${txt}" style="height:${pct}%;background:${typeMeta[k][1]}">${pct>=9?txt:""}</div>`;
+    }).join("");
+    return `<div class="time-day"><div class="time-total">${total?(total/60).toFixed(1)+"h":"—"}</div><div class="time-stack" style="height:${stackHeight}px">${segs}</div><div class="time-date">${d.slice(5)}</div></div>`;
+  }).join("")}</div></div>`;
+}
+function renderSleep(anchor){
+  const panel=document.getElementById("sleepPanel");
+  const following=parseDate(anchor);following.setDate(following.getDate()+1);
+  const nextDay=fmt(following);
+  // 图表以次日早晨为横轴，向后多显示一天，确保所选日期当晚的入睡点可见。
+  const ds=dateSeries(nextDay,14);
+  const selected=sleepFor(anchor),nextWake=sleepFor(nextDay)?.wake_time;
+  const showTime=t=>t?esc(t.slice(0,5)):'未记录';
+  const summaryHtml=`<div class="sleep-summary"><strong>${esc(anchor)} 作息</strong><span>当日起床：<b>${showTime(selected?.wake_time)}</b></span><span>当晚入睡：<b>${showTime(selected?.bed_time)}</b></span><span>次日起床（${esc(nextDay)}）：<b>${showTime(nextWake)}</b></span></div>`;
+// 横轴按次日早晨的日期对齐：当天记录的“入睡时间”属于当晚至次日凌晨，因此绘在次日。
+const recs=ds.map(d=>{
+  const prev=parseDate(d);prev.setDate(prev.getDate()-1);
+  return {date:d,wakeRec:sleepFor(d),bedRec:sleepFor(fmt(prev)),bedLogDate:fmt(prev)};
+});
+  if(!recs.some(x=>x.wakeRec?.wake_time||x.bedRec?.bed_time)){
+    panel.innerHTML=summaryHtml+`<div class="sub">目前还没有足够作息记录。之后记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;
+    return;
+  }
+  const WAKE_TARGET=33, BED_TARGET=24.5;
+  // 固定夜间坐标：22:00 在顶部，次日 12:00 在底部（22–36）。
+  const toHour=(t,isBed=false)=>{
+    if(!t)return null;
+    const [h,m]=t.slice(0,5).split(":").map(Number);
+    const v=h+m/60+(h<12?24:0);
+    return v>=22&&v<=36?v:null;
+  };
+  const wakeVals=recs.map(x=>toHour(x.wakeRec?.wake_time,false));
+  const bedVals=recs.map(x=>toHour(x.bedRec?.bed_time,true));
+  const movingAvg=vals=>vals.map((v,i)=>{if(v===null)return null;
+    const w=vals.slice(Math.max(0,i-6),i+1).filter(v=>v!==null);
+    return w.length>=3?w.reduce((a,b)=>a+b,0)/w.length:null;
+  });
+  const wakeAvg=movingAvg(wakeVals),bedAvg=movingAvg(bedVals);
+  const ymin=22,ymax=36;
+  const W=Math.max(720,Math.round(panel.getBoundingClientRect().width||760)),H=340,L=58,R=22,T=24,B=44,pw=W-L-R,ph=H-T-B;
+  const x=i=>L+(ds.length===1?pw/2:i*pw/(ds.length-1));
+  const y=v=>T+(v-ymin)*ph/(ymax-ymin);
+  const fmtHour=v=>{const n=((Math.round(v*60)%1440)+1440)%1440,h=Math.floor(n/60),m=n%60;return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`};
+  const segments=vals=>{
+    const out=[];let cur=[];
+    vals.forEach((v,i)=>{if(v===null){if(cur.length)out.push(cur);cur=[]}else cur.push([x(i),y(v)])});
+    if(cur.length)out.push(cur);
+    return out;
+  };
+  const lineSvg=(vals,cls)=>segments(vals).map(seg=>`<polyline class="${cls}" points="${seg.map(p=>p.join(",")).join(" ")}"></polyline>`).join("");
+  const yTicks=[];for(let v=22;v<=36;v+=2)yTicks.push(v);
+  const grid=yTicks.map(v=>`<line class="sleep-grid" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-label" x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmtHour(v)}</text>`).join("");
+  const xGrid=ds.map((_,i)=>i%2===0?`<line x1="${x(i)}" y1="${T}" x2="${x(i)}" y2="${H-B}" stroke="#f2f4f7" stroke-width="1"></line>`:"").join("");
+  const xLabels=ds.map((d,i)=>i%2===0||i===ds.length-1?`<text class="sleep-label" x="${x(i)}" y="${H-12}" text-anchor="middle">${d.slice(5)}</text>`:"").join("");
+  const targetSvg=[
+    [WAKE_TARGET,"09:00 起床目标"],
+    [BED_TARGET,"00:30 入睡目标"]
+  ].filter(([v])=>v>=ymin&&v<=ymax).map(([v,label])=>`<line class="sleep-target" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-target-label" x="${W-R-2}" y="${y(v)-4}" text-anchor="end">${label}</text>`).join("");
+  const wakeDots=wakeVals.map((v,i)=>v===null?"":`<circle class="${v>WAKE_TARGET?'sleep-dot-late':'sleep-dot-wake'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${ds[i]} 起床 ${recs[i].wakeRec.wake_time.slice(0,5)}${v>WAKE_TARGET?' · 晚于目标':''}</title></circle>`).join("");
+  const bedDots=bedVals.map((v,i)=>v===null?"":`<circle class="${v>BED_TARGET?'sleep-dot-late':'sleep-dot-bed'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${recs[i].bedLogDate} 晚间 → ${ds[i]} 早晨 · 入睡 ${recs[i].bedRec.bed_time.slice(0,5)}${v>BED_TARGET?' · 晚于目标':''}</title></circle>`).join("");
+  const streaks=(vals,test)=>{
+    const out=[];let s=null;
+    vals.forEach((v,i)=>{if(v!==null&&test(v)){if(s===null)s=i}else{if(s!==null&&i-s>=2)out.push([s,i-1]);s=null}});
+    if(s!==null&&vals.length-s>=2)out.push([s,vals.length-1]);
+    return out;
+  };
+  const lateWake=streaks(wakeVals,v=>v>WAKE_TARGET),lateBed=streaks(bedVals,v=>v>BED_TARGET);
+  const alerts=[];
+  if(lateWake.length){const [a,b]=lateWake.at(-1);alerts.push(`连续晚起 ${b-a+1} 天（${ds[a].slice(5)}–${ds[b].slice(5)}）`)}
+  if(lateBed.length){const [a,b]=lateBed.at(-1);alerts.push(`连续晚睡 ${b-a+1} 天（${ds[a].slice(5)}–${ds[b].slice(5)}）`)}
+  const alertHtml=alerts.length?`<div class="sleep-alert">⚠ ${alerts.join("；")}。建议先稳定作息窗口，而不是靠单日早起补偿。</div>`:"";
+  panel.innerHTML=summaryHtml+`
+    <div class="sleep-legend">
+      <span><i style="background:#4f46e5"></i>起床时间</span>
+      <span><i style="background:#0f766e"></i>入睡时间</span>
+      <span><i style="background:#4f46e5;opacity:.55"></i>7天移动平均</span>
+      <span><i style="background:#c2410c"></i>目标线</span>
+      <span>红点 = 晚于目标 · 缺失日期不连线</span><span>横轴为次日早晨日期；所选日期的当晚入睡显示在下一天</span>
+    </div>
+    ${alertHtml}
+    <div class="sleepchart-wrap"><svg class="sleepchart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="近14天起床与入睡时间折线图">${xGrid}${grid}${targetSvg}<line class="sleep-axis" x1="${L}" y1="${T}" x2="${L}" y2="${H-B}"></line><line class="sleep-axis" x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}"></line>${xLabels}${lineSvg(wakeAvg,"sleep-avg-wake")}${lineSvg(bedAvg,"sleep-avg-bed")}${lineSvg(wakeVals,"sleep-line-wake")}${lineSvg(bedVals,"sleep-line-bed")}${wakeDots}${bedDots}</svg></div>`;
+}
+function renderReview(date){const r=reviews.find(x=>x.review_date===date),p=document.getElementById("reviewPanel"),c=document.getElementById("reviewContent");if(!r){p.style.display="none";return}p.style.display="block";c.innerHTML=`<div class="reviewgrid"><div class="reviewbox"><div class="reviewtitle">每日总结 ${r.status==="provisional"?'<span class="badge">暂定</span>':''}</div><p>${esc(r.summary)}</p>${r.key_research_conclusion?`<div class="reviewitem"><b>今日关键科研结论</b><br>${esc(r.key_research_conclusion)}</div>`:""}${r.wins?`<div class="reviewitem"><b>做得好的地方</b><br>${esc(r.wins)}</div>`:""}${r.issues?`<div class="reviewitem"><b>真正的问题</b><br>${esc(r.issues)}</div>`:""}</div><div class="reviewbox"><div class="reviewtitle">明日规划</div>${r.top_priority_next_day?`<div class="priority"><b>唯一最高优先级</b><br>${esc(r.top_priority_next_day)}</div>`:""}${r.secondary_tasks?`<div class="reviewitem"><b>次要任务</b><br>${esc(r.secondary_tasks)}</div>`:""}${r.english_reading_plan?`<div class="reviewitem"><b>英语 / 文献</b><br>${esc(r.english_reading_plan)}</div>`:""}${r.wellbeing_plan?`<div class="reviewitem"><b>休息 / 状态</b><br>${esc(r.wellbeing_plan)}</div>`:""}${r.avoid_tomorrow?`<div class="avoid"><b>明日不要做</b><br>${esc(r.avoid_tomorrow)}</div>`:""}</div></div>`}
+function renderDetail(s,e){const xs=entries.filter(x=>x.entry_date>=s&&x.entry_date<=e),by={};xs.forEach(x=>(by[x.entry_date]??=[]).push(x));const dates=Object.keys(by).sort().reverse();document.getElementById("detail").innerHTML=dates.length?dates.map(d=>{const st=dayStats(d);const split=`科研相关 ${(st.research/60).toFixed(1)} h（明确纯科研 ${(st.core/60).toFixed(1)} h${st.support?`，科研支持 ${(st.support/60).toFixed(1)} h`:""}${st.mixed?`，混合 ${(st.mixed/60).toFixed(1)} h`:""}）`;return `<div class="card"><h3>${d} <span class="sub">${split} · 记录 ${(st.total/60).toFixed(1)} h</span></h3>${by[d].map(x=>`<div class="entry"><div>${esc(x.start_time.slice(0,5))}–${esc(x.end_time.slice(0,5))}</div><div class="cat">${esc(x.category)}</div><div>${esc(x.activity)}${x.note?`<div class="note">${esc(x.note)}</div>`:""}</div></div>`).join("")}</div>`}).join(""):`<div class="card sub">这个范围还没有记录。</div>`}
+function render(){const dp=document.getElementById("datePick"),[s,e]=rangeFor(dp.value,mode);document.getElementById("rangeText").textContent=s===e?s:`${s} ～ ${e}`;renderMetrics(s,e);renderResearchTrend(dp.value);renderHabits(dp.value);renderTimeStructure(dp.value);renderSleep(dp.value);renderReview(dp.value);renderDetail(s,e)}
+async function load(){const code=document.getElementById("accessCode").value.trim();if(!code)return;document.getElementById("status").textContent="正在验证…";V13_WRITE_TOKEN=code;try{const data=await V13_request("read");entries=data.entries||[];reviews=data.reviews||[];sleep=data.sleep||[];goals=data.goals||[];const dp=document.getElementById("datePick");const today=new Date();dp.value=today.getFullYear()+"-"+String(today.getMonth()+1).padStart(2,"0")+"-"+String(today.getDate()).padStart(2,"0");document.getElementById("accessCode").value="";document.getElementById("app").style.display="block";document.getElementById("status").textContent="已解锁 · V13.3（保留 V12 全部分析面板）· "+new Date().toLocaleString("zh-CN");V13_syncFormDates(dp.value);render()}catch(e){V13_WRITE_TOKEN="";document.getElementById("app").style.display="none";document.getElementById("status").textContent="解锁失败： "+e.message}}
+document.getElementById("unlockBtn").onclick=load;document.getElementById("accessCode").addEventListener("keydown",e=>{if(e.key==="Enter")load()});document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("active",x===b));render()});window.addEventListener("resize",()=>{if(document.getElementById("app").style.display!=="none"){const date=document.getElementById("datePick").value;if(date)renderSleep(date)}});
+document.getElementById("datePick").onchange=async()=>{const dp=document.getElementById("datePick"),selected=dp.value;V13_syncFormDates(selected);if(!V13_WRITE_TOKEN){render();return}document.getElementById("status").textContent="正在刷新所选日期数据…";try{await V13_refresh();dp.value=selected;document.getElementById("status").textContent="已刷新 · V13.3 · "+new Date().toLocaleString("zh-CN")}catch(e){document.getElementById("status").textContent="刷新失败，保留现有数据 · "+e.message;dp.value=selected;render()}};
+
+function V13_syncFormDates(date){
+  for(const form of document.querySelectorAll(".v13-write form")){
+    const input=form.querySelector('input[type="date"]');
+    if(input)input.value=date;
+  }
+}
+async function V13_refresh(){
+  const data=await V13_request("read");
+  entries=data.entries||[];reviews=data.reviews||[];sleep=data.sleep||[];goals=data.goals||[];
+  render();
+}
+const V13_operations={timelineForm:"timeline.create",goalsForm:"daily_goal.upsert",sleepForm:"sleep_record.upsert",reviewForm:"daily_review.upsert"};
+function V13_notice(msg,isError=false){
+  const e=document.getElementById("saveStatus");
+  e.textContent=msg;
+  e.style.color=isError?"#b91c1c":"#047857";
+}
+for(const [formId,operation] of Object.entries(V13_operations)){
+  const form=document.getElementById(formId);
+  form.addEventListener("submit",async event=>{
+    event.preventDefault();
+    if(!V13_WRITE_TOKEN)return V13_notice("请先解锁仪表盘",true);
+    const data={};
+    for(const [key,value] of new FormData(form)){
+      if(typeof value!=="string"||value.trim()==="")continue;
+      data[key]=["research_hours","english_minutes","exercise_minutes","sleep_quality","energy_score"].includes(key)?Number(value):value.trim();
+    }
+    if(operation==="timeline.create"&&data.end_time<=data.start_time){
+      return V13_notice("结束时间必须晚于开始时间",true);
+    }
+    const dateField={ "timeline.create":"entry_date","daily_goal.upsert":"goal_date","sleep_record.upsert":"record_date","daily_review.upsert":"review_date"}[operation];
+    const filled=Object.keys(data).filter(x=>x!==dateField&&x!=="status");
+    if(operation!=="timeline.create"&&!filled.length){
+      return V13_notice("至少填写一项实际需要保存的信息",true);
+    }
+    const payload={operation,data};
+    const fingerprint=JSON.stringify(payload);
+    if(!V13_pending[formId]||V13_pending[formId].fingerprint!==fingerprint){
+      V13_pending[formId]={fingerprint,key:crypto.randomUUID()};
+    }
+    if(!confirm("确认保存真实记录？\n"+JSON.stringify(data,null,2)))return;
+    const btn=form.querySelector("button[type=submit],button.submit");
+    if(btn)btn.disabled=true;
+    V13_notice("正在保存…");
+    try{
+      const result=await V13_request("write",payload,V13_pending[formId].key);
+      delete V13_pending[formId];
+      document.getElementById("datePick").value=data[dateField];
+      V13_syncFormDates(data[dateField]);
+      V13_notice("保存成功："+result.operation+" · "+result.record_key+(result.replayed?"（重复请求已安全处理）":""));
+      await V13_refresh();
+      document.getElementById("status").textContent="V13.3 已同步最新数据 · "+new Date().toLocaleString("zh-CN");
+      if(operation==="timeline.create"){
+        const activity=form.querySelector('[name="activity"]'),note=form.querySelector('[name="note"]');
+        if(activity)activity.value="";
+        if(note)note.value="";
+      }
+    }catch(error){
+      V13_notice("写入结果未确认："+error.message+"。如超时，先查看时间线，避免重复添加。",true);
+    }finally{if(btn)btn.disabled=false;}
+  });
+}
+</script>
+</body>
+</html>
