@@ -93,7 +93,7 @@ function catType(x){const c=String(x.category||""),a=String(x.activity||"");if(c
 function isResearchRelated(x){const t=catType(x);return t==="core"||t==="support"||t==="mixed"}
 function dateSeries(endDate,n=14){const end=parseDate(endDate),out=[];for(let i=n-1;i>=0;i--){const d=new Date(end);d.setDate(end.getDate()-i);out.push(fmt(d))}return out}
 function dayEntries(d){return entries.filter(x=>x.entry_date===d)}
-function dayStats(d){const xs=dayEntries(d),o={total:0,research:0,exercise:0,study:0,core:0,support:0,admin:0,rest:0,mixed:0,other:0,content:0};for(const x of xs){const m=mins(x.start_time,x.end_time),t=catType(x);o.total+=m;o[t]=(o[t]||0)+m;if(isResearchRelated(x))o.research+=m;if(t==="exercise")o.exercise+=m;if(t==="study")o.study+=m}return o}
+function dayStats(d){const xs=dayEntries(d),o={total:0,research:0,exercise:0,study:0,core:0,support:0,admin:0,rest:0,mixed:0,other:0,content:0};for(const x of xs){const m=mins(x.start_time,x.end_time),t=catType(x);o.total+=m;o[t]=(o[t]||0)+m;if(isResearchRelated(x))o.research+=m;}return o}
 function sleepFor(d){return sleep.find(x=>x.record_date===d)}
 function targetAtDate(d,key,fallback){const g=goals.filter(x=>x.goal_date<=d && x[key]).sort((a,b)=>b.goal_date.localeCompare(a.goal_date))[0];if(!g)return fallback;const [h,m]=g[key].slice(0,5).split(":").map(Number);return h+m/60+(h<12?24:0)}
 function bedWithinGoal(rec,d){if(!rec?.bed_time)return false;const [h,m]=rec.bed_time.slice(0,5).split(":").map(Number);return h+m/60+(h<12?24:0)<=targetAtDate(d,"target_bed_time",24.5)}
