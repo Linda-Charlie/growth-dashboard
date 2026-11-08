@@ -138,7 +138,6 @@ const recs=ds.map(d=>{
     panel.innerHTML=summaryHtml+`<div class="sub">目前还没有足够作息记录。之后记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;
     return;
   }
-  const WAKE_TARGET=targetAtDate(anchor,"target_wake_time",33), BED_TARGET=targetAtDate(anchor,"target_bed_time",24.5);
   // 固定夜间坐标：22:00 在顶部，次日 12:00 在底部（22–36）。
   const toHour=(t,isBed=false)=>{
     if(!t)return null;
@@ -169,10 +168,21 @@ const recs=ds.map(d=>{
   const grid=yTicks.map(v=>`<line class="sleep-grid" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-label" x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmtHour(v)}</text>`).join("");
   const xGrid=ds.map((_,i)=>i%2===0?`<line x1="${x(i)}" y1="${T}" x2="${x(i)}" y2="${H-B}" stroke="#f2f4f7" stroke-width="1"></line>`:"").join("");
   const xLabels=ds.map((d,i)=>i%2===0||i===ds.length-1?`<text class="sleep-label" x="${x(i)}" y="${H-12}" text-anchor="middle">${d.slice(5)}</text>`:"").join("");
-  const targetSvg=[
-    [WAKE_TARGET,fmtHour(WAKE_TARGET)+" 起床目标"],
-    [BED_TARGET,fmtHour(BED_TARGET)+" 入睡目标"]
-  ].filter(([v])=>v>=ymin&&v<=ymax).map(([v,label])=>`<line class="sleep-target" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-target-label" x="${W-R-2}" y="${y(v)-4}" text-anchor="end">${label}</text>`).join("");
+  // 起床按当天、入睡按前一晚分别匹配历史生效目标；横轴为次日早晨。
+  const wakeTargets=ds.map(d=>targetAtDate(d,"target_wake_time",33));
+  const bedTargets=recs.map(rec=>targetAtDate(rec.bedLogDate,"target_bed_time",24.5));
+  const targetStep=(vals,label)=>{
+    if(!vals.length)return "";
+    let path=`M ${L} ${y(vals[0])}`;
+    for(let i=0;i<vals.length-1;i++){
+      const mid=(x(i)+x(i+1))/2;
+      path+=` H ${mid} V ${y(vals[i+1])}`;
+    }
+    path+=` H ${W-R}`;
+    const v=vals.at(-1);
+    return `<path class="sleep-target" d="${path}"><title>${label}：使用各日期当时生效的目标</title></path><text class="sleep-target-label" x="${W-R-2}" y="${y(v)-4}" text-anchor="end">${fmtHour(v)} ${label}</text>`;
+  };
+  const targetSvg=targetStep(wakeTargets,"起床目标")+targetStep(bedTargets,"入睡目标");
   const wakeDots=wakeVals.map((v,i)=>v===null?"":`<circle class="${v>targetAtDate(ds[i],"target_wake_time",33)?'sleep-dot-late':'sleep-dot-wake'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${ds[i]} 起床 ${recs[i].wakeRec.wake_time.slice(0,5)}${v>targetAtDate(ds[i],"target_wake_time",33)?' · 晚于目标':''}</title></circle>`).join("");
   const bedDots=bedVals.map((v,i)=>v===null?"":`<circle class="${v>targetAtDate(recs[i].bedLogDate,"target_bed_time",24.5)?'sleep-dot-late':'sleep-dot-bed'}" cx="${x(i)}" cy="${y(v)}" r="4"><title>${recs[i].bedLogDate} 晚间 → ${ds[i]} 早晨 · 入睡 ${recs[i].bedRec.bed_time.slice(0,5)}${v>targetAtDate(recs[i].bedLogDate,"target_bed_time",24.5)?' · 晚于目标':''}</title></circle>`).join("");
   const streaks=(vals,test)=>{
@@ -192,7 +202,7 @@ const recs=ds.map(d=>{
       <span><i style="background:#0f766e"></i>入睡时间</span>
       <span><i style="background:#4f46e5;opacity:.55"></i>7天移动平均</span>
       <span><i style="background:#c2410c"></i>目标线</span>
-      <span>目标线对应所选日期；红点按各日期生效目标判断 · 缺失日期不连线</span><span>横轴为次日早晨日期；所选日期的当晚入睡显示在下一天</span>
+      <span>阶梯目标线及红点均按历史生效目标判断（起床按当天，入睡按前一晚） · 缺失日期不连线</span><span>横轴为次日早晨日期；所选日期的当晚入睡显示在下一天</span>
     </div>
     ${alertHtml}
     <div class="sleepchart-wrap"><svg class="sleepchart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="近14天起床与入睡时间折线图">${xGrid}${grid}${targetSvg}<line class="sleep-axis" x1="${L}" y1="${T}" x2="${L}" y2="${H-B}"></line><line class="sleep-axis" x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}"></line>${xLabels}${lineSvg(wakeAvg,"sleep-avg-wake")}${lineSvg(bedAvg,"sleep-avg-bed")}${lineSvg(wakeVals,"sleep-line-wake")}${lineSvg(bedVals,"sleep-line-bed")}${wakeDots}${bedDots}</svg></div>`;
