@@ -129,12 +129,8 @@ function renderSleep(anchor){
   const selected=sleepFor(anchor),nextWake=sleepFor(nextDay)?.wake_time;
   const showTime=t=>t?esc(t.slice(0,5)):'未记录';
   const summaryHtml=`<div class="sleep-summary"><strong>${esc(anchor)} 作息</strong><span>当日起床：<b>${showTime(selected?.wake_time)}</b></span><span>当晚入睡：<b>${showTime(selected?.bed_time)}</b></span><span>次日起床（${esc(nextDay)}）：<b>${showTime(nextWake)}</b></span></div>`;
-// 横轴日期 d 对应同一段跨夜睡眠：前一日的 bed_time + 当日的 wake_time。
-const recs=ds.map(d=>{
-  const prev=parseDate(d);prev.setDate(prev.getDate()-1);
-  const bedLogDate=fmt(prev);
-  return {date:d,wakeRec:sleepFor(d),bedRec:sleepFor(bedLogDate),bedLogDate};
-});
+// record_date 表示这段睡眠对应的早晨日期；入睡与起床都从同一条记录读取并绘在同一横轴日期。
+const recs=ds.map(d=>({date:d,wakeRec:sleepFor(d),bedRec:sleepFor(d),bedLogDate:d}));
   if(!recs.some(x=>x.wakeRec?.wake_time||x.bedRec?.bed_time)){
     panel.innerHTML=summaryHtml+`<div class="sub">目前还没有足够作息记录。之后记录实际入睡和起床时间后，这里会逐渐形成趋势。</div>`;
     return;
@@ -169,7 +165,7 @@ const recs=ds.map(d=>{
   const grid=yTicks.map(v=>`<line class="sleep-grid" x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}"></line><text class="sleep-label" x="${L-8}" y="${y(v)+4}" text-anchor="end">${fmtHour(v)}</text>`).join("");
   const xGrid=ds.map((_,i)=>i%2===0?`<line x1="${x(i)}" y1="${T}" x2="${x(i)}" y2="${H-B}" stroke="#f2f4f7" stroke-width="1"></line>`:"").join("");
   const xLabels=ds.map((d,i)=>i%2===0||i===ds.length-1?`<text class="sleep-label" x="${x(i)}" y="${H-12}" text-anchor="middle">${d.slice(5)}</text>`:"").join("");
-  // 起床目标按横轴当天生效值；入睡目标按前一晚记录日期的生效值。
+  // 入睡与起床目标均按当前睡眠记录日期的历史生效目标判断。
   const wakeTargets=ds.map(d=>targetAtDate(d,"target_wake_time",33));
   const bedTargets=recs.map(rec=>targetAtDate(rec.bedLogDate,"target_bed_time",24.5));
   const targetStep=(vals,label)=>{
@@ -203,7 +199,7 @@ const recs=ds.map(d=>{
       <span><i style="background:#0f766e"></i>入睡时间</span>
       <span><i style="background:#4f46e5;opacity:.55"></i>7天移动平均</span>
       <span><i style="background:#c2410c"></i>目标线</span>
-      <span>阶梯目标线及红点按各自实际记录日期的历史生效目标判断 · 缺失日期不连线</span><span>横轴为次日早晨日期；同一日期对应前一晚入睡与当天起床</span>
+      <span>阶梯目标线及红点按各自实际记录日期的历史生效目标判断 · 缺失日期不连线</span><span>横轴为睡眠记录日期；入睡与起床均对应同一条记录、显示在同一日期</span>
     </div>
     ${alertHtml}
     <div class="sleepchart-wrap"><svg class="sleepchart" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="近14天起床与入睡时间折线图">${xGrid}${grid}${targetSvg}<line class="sleep-axis" x1="${L}" y1="${T}" x2="${L}" y2="${H-B}"></line><line class="sleep-axis" x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}"></line>${xLabels}${lineSvg(wakeAvg,"sleep-avg-wake")}${lineSvg(bedAvg,"sleep-avg-bed")}${lineSvg(wakeVals,"sleep-line-wake")}${lineSvg(bedVals,"sleep-line-bed")}${wakeDots}${bedDots}</svg></div>`;
